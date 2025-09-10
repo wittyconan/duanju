@@ -95,26 +95,40 @@ class ApiService {
   }
 
   async getRecommended(): Promise<VideoItem[]> {
-    const response = await this.request<RecommendResponse>('/vod/recommend');
+    const response = await this.request<RecommendResponse>('/vod/recommend?size=20');
     return response.items.map(item => this.convertRecommendItem(item));
   }
 
-  async getVideoList(categoryId?: number, page: number = 1): Promise<VideoItem[]> {
+  async getVideoList(categoryId?: number, page: number = 1): Promise<{ videos: VideoItem[]; pagination: { total: number; totalPages: number; currentPage: number; } }> {
     const params = new URLSearchParams({ page: page.toString() });
     if (categoryId) {
       params.append('categoryId', categoryId.toString());
     }
     const response = await this.request<ListResponse>(`/vod/list?${params}`);
-    return response.list.map(item => this.convertListItem(item));
+    return {
+      videos: response.list.map(item => this.convertListItem(item)),
+      pagination: {
+        total: response.total,
+        totalPages: response.totalPages,
+        currentPage: response.currentPage
+      }
+    };
   }
 
-  async searchVideos(name: string, page: number = 1): Promise<VideoItem[]> {
+  async searchVideos(name: string, page: number = 1): Promise<{ videos: VideoItem[]; pagination: { total: number; totalPages: number; currentPage: number; } }> {
     const params = new URLSearchParams({
       name,
       page: page.toString()
     });
     const response = await this.request<ListResponse>(`/vod/search?${params}`);
-    return response.list.map(item => this.convertListItem(item));
+    return {
+      videos: response.list.map(item => this.convertListItem(item)),
+      pagination: {
+        total: response.total,
+        totalPages: response.totalPages,
+        currentPage: response.currentPage
+      }
+    };
   }
 
   async getLatest(): Promise<VideoItem[]> {
@@ -124,9 +138,9 @@ class ApiService {
 
   async getVideoDetail(videoName: string): Promise<VideoItem | null> {
     try {
-      const searchResults = await this.searchVideos(videoName);
+      const searchResult = await this.searchVideos(videoName);
       // 寻找完全匹配或最相似的结果
-      const exactMatch = searchResults.find(video => 
+      const exactMatch = searchResult.videos.find(video => 
         video.name.toLowerCase() === videoName.toLowerCase()
       );
       if (exactMatch) {
@@ -134,7 +148,7 @@ class ApiService {
       }
       
       // 如果没有完全匹配，返回第一个结果（通常是最相关的）
-      return searchResults.length > 0 ? searchResults[0] : null;
+      return searchResult.videos.length > 0 ? searchResult.videos[0] : null;
     } catch (error) {
       console.error('Failed to get video detail:', error);
       return null;

@@ -401,7 +401,13 @@ export function CustomVideoPlayer({
         <span className="text-xs font-medium whitespace-nowrap">自动下一集</span>
         <Switch
           checked={autoPlayNextEnabled}
-          onCheckedChange={setAutoPlayNextEnabled}
+          onCheckedChange={(checked) => {
+            setAutoPlayNextEnabled(checked);
+            toast.success(checked ? '已开启自动下一集' : '已关闭自动下一集', {
+              duration: 1500,
+              position: 'top-center'
+            });
+          }}
           className="data-[state=checked]:bg-blue-500 data-[state=unchecked]:bg-gray-600"
         />
       </div>

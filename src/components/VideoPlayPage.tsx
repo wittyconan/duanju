@@ -121,9 +121,10 @@ export function VideoPlayPage() {
       if (nextEpisode <= episodeList.length) {
         setCurrentEpisode(nextEpisode);
       } else {
-        // 已经是最后一集
-        toast.info('全部播放完毕', {
-          duration: 2000,
+        // 已经是最后一集，关闭自动下一集并显示提示
+        setAutoPlayNext(false);
+        toast.info('全部播放完毕，已关闭自动下一集', {
+          duration: 3000,
           position: 'top-center'
         });
       }

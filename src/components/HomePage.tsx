@@ -8,6 +8,7 @@ import { VideoGridSkeleton } from './VideoCardSkeleton';
 import { VideoDetailModal } from './VideoDetailModal';
 import { Footer } from './Footer';
 import { BackToTop } from './BackToTop';
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { apiService } from '@/services/api';
 import type { VideoCategory, VideoItem } from '@/types';
 
@@ -23,6 +24,8 @@ export function HomePage() {
   const [selectedVideo, setSelectedVideo] = useState<VideoItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
+  const [pagination, setPagination] = useState({ total: 0, totalPages: 0, currentPage: 1 });
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     loadCategories();
@@ -35,13 +38,15 @@ export function HomePage() {
       if (currentPath === '/recommend' && !isRecommendMode) {
         setIsRecommendMode(true);
         setActiveCategory(null);
+        setCurrentPage(1);
         loadRecommendedVideos();
       } else if (categoryId) {
         const targetCategoryId = parseInt(categoryId);
         if (targetCategoryId !== activeCategory || isRecommendMode) {
           setIsRecommendMode(false);
           setActiveCategory(targetCategoryId);
-          loadVideosByCategory(targetCategoryId);
+          setCurrentPage(1);
+          loadVideosByCategory(targetCategoryId, 1);
         }
       } else if (currentPath === '/' && activeCategory === null && !isRecommendMode) {
         // 默认选择第一个分类
@@ -49,8 +54,9 @@ export function HomePage() {
         if (firstCategory) {
           setIsRecommendMode(false);
           setActiveCategory(firstCategory);
+          setCurrentPage(1);
           navigate(`/category/${firstCategory}`, { replace: true });
-          loadVideosByCategory(firstCategory);
+          loadVideosByCategory(firstCategory, 1);
         }
       }
     }
@@ -82,17 +88,23 @@ export function HomePage() {
     }
   };
 
-  const loadVideosByCategory = async (categoryId: number | null) => {
+  const loadVideosByCategory = async (categoryId: number | null, page: number = 1) => {
     if (loading) return; // 防止重复加载
     setLoading(true);
     try {
-      const videos = categoryId 
-        ? await apiService.getVideoList(categoryId)
-        : await apiService.getRecommended();
-      setVideos(videos || []);
+      if (categoryId) {
+        const result = await apiService.getVideoList(categoryId, page);
+        setVideos(result.videos || []);
+        setPagination(result.pagination);
+      } else {
+        const videos = await apiService.getRecommended();
+        setVideos(videos || []);
+        setPagination({ total: 0, totalPages: 0, currentPage: 1 });
+      }
     } catch (error) {
       console.error('Failed to load videos:', error);
       setVideos([]);
+      setPagination({ total: 0, totalPages: 0, currentPage: 1 });
     } finally {
       setLoading(false);
     }
@@ -102,13 +114,16 @@ export function HomePage() {
     setLoading(true);
     setIsRecommendMode(false);
     setActiveCategory(null);
+    setCurrentPage(1);
     navigate('/');
     try {
-      const videos = await apiService.searchVideos(query);
-      setVideos(videos || []);
+      const result = await apiService.searchVideos(query);
+      setVideos(result.videos || []);
+      setPagination({ total: 0, totalPages: 0, currentPage: 1 }); // 搜索暂不支持分页显示
     } catch (error) {
       console.error('Failed to search videos:', error);
       setVideos([]);
+      setPagination({ total: 0, totalPages: 0, currentPage: 1 });
     } finally {
       setLoading(false);
     }
@@ -122,12 +137,14 @@ export function HomePage() {
     if (categoryId) {
       setIsRecommendMode(false);
       setActiveCategory(categoryId);
+      setCurrentPage(1);
       navigate(`/category/${categoryId}`);
-      loadVideosByCategory(categoryId);
+      loadVideosByCategory(categoryId, 1);
     } else {
       // 选择推荐
       setIsRecommendMode(true);
       setActiveCategory(null);
+      setCurrentPage(1);
       navigate('/recommend');
       loadRecommendedVideos();
     }
@@ -142,6 +159,7 @@ export function HomePage() {
     if (type === 'recommended') {
       setIsRecommendMode(true);
       setActiveCategory(null);
+      setCurrentPage(1);
       navigate('/recommend');
       loadRecommendedVideos();
     } else if (type === 'home') {
@@ -149,8 +167,9 @@ export function HomePage() {
         const firstCategory = categories[0].type_id;
         setIsRecommendMode(false);
         setActiveCategory(firstCategory);
+        setCurrentPage(1);
         navigate(`/category/${firstCategory}`);
-        loadVideosByCategory(firstCategory);
+        loadVideosByCategory(firstCategory, 1);
       }
     } else if (type === 'latest') {
       const latestCategoryId = categories.find(cat => 
@@ -159,14 +178,16 @@ export function HomePage() {
       if (latestCategoryId) {
         setIsRecommendMode(false);
         setActiveCategory(latestCategoryId);
+        setCurrentPage(1);
         navigate(`/category/${latestCategoryId}`);
-        loadVideosByCategory(latestCategoryId);
+        loadVideosByCategory(latestCategoryId, 1);
       } else if (categories.length > 0) {
         const firstCategory = categories[0].type_id;
         setIsRecommendMode(false);
         setActiveCategory(firstCategory);
+        setCurrentPage(1);
         navigate(`/category/${firstCategory}`);
-        loadVideosByCategory(firstCategory);
+        loadVideosByCategory(firstCategory, 1);
       }
     }
   };
@@ -177,6 +198,71 @@ export function HomePage() {
     
     // 导航到播放页面
     navigate(`/play/${video.id}/${episode}`);
+  };
+
+  const handlePageChange = (page: number) => {
+    if (page === currentPage || loading) return;
+    if (page < 1 || page > pagination.totalPages) return; // 边界检查
+    
+    setCurrentPage(page);
+    if (activeCategory && !isRecommendMode) {
+      loadVideosByCategory(activeCategory, page);
+    }
+  };
+
+  const renderPagination = () => {
+    if (isRecommendMode || pagination.totalPages <= 1) return null;
+
+    const pages = [];
+    const maxVisiblePages = 5;
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(pagination.totalPages, startPage + maxVisiblePages - 1);
+    
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(i);
+    }
+
+    return (
+      <div className="flex justify-center mt-8">
+        <Pagination>
+          <PaginationContent>
+            {currentPage > 1 && (
+              <PaginationItem>
+                <PaginationPrevious 
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  className="cursor-pointer"
+                />
+              </PaginationItem>
+            )}
+            
+            {pages.map((page) => (
+              <PaginationItem key={page}>
+                <PaginationLink
+                  onClick={() => handlePageChange(page)}
+                  isActive={page === currentPage}
+                  className="cursor-pointer"
+                >
+                  {page}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+            
+            {currentPage < pagination.totalPages && (
+              <PaginationItem>
+                <PaginationNext 
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  className="cursor-pointer"
+                />
+              </PaginationItem>
+            )}
+          </PaginationContent>
+        </Pagination>
+      </div>
+    );
   };
 
   return (
@@ -199,16 +285,19 @@ export function HomePage() {
           {loading ? (
             <VideoGridSkeleton count={18} />
           ) : videos && videos.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-4">
-              {videos.map((video) => (
-                <VideoCard
-                  key={video.id}
-                  video={video}
-                  onClick={handleVideoClick}
-                  onPlay={handleVideoPlay}
-                />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-4">
+                {videos.map((video) => (
+                  <VideoCard
+                    key={video.id}
+                    video={video}
+                    onClick={handleVideoClick}
+                    onPlay={handleVideoPlay}
+                  />
+                ))}
+              </div>
+              {renderPagination()}
+            </>
           ) : (
             <div className="flex flex-col items-center justify-center py-16 text-center">
               <div className="text-6xl mb-4">📺</div>
