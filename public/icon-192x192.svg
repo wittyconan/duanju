@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 32 32" fill="none">
+  <!-- 背景圆 -->
+  <circle cx="16" cy="16" r="15" fill="url(#gradient)" stroke="#fff" stroke-width="2"/>
+  
+  <!-- 渐变定义 -->
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="playGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f8fafc;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- 播放按钮 -->
+  <polygon points="12,9 12,23 22,16" fill="url(#playGradient)" stroke="none"/>
+  
+  <!-- 装饰性光晕 -->
+  <circle cx="16" cy="16" r="12" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+</svg>

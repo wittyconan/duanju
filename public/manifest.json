@@ -1,0 +1,52 @@
+{
+  "name": "瞬剧 - 现代化视频播放平台",
+  "short_name": "瞬剧",
+  "description": "瞬剧是一个现代化的在线视频播放平台，提供流畅的视频观看体验。支持多集播放、智能搜索、分类浏览等功能，让您轻松享受优质的影视内容。",
+  "theme_color": "#6366f1",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "orientation": "any",
+  "scope": "/",
+  "start_url": "/",
+  "id": "snapdrama-app",
+  "version": "1.0.0",
+  "icons": [
+    {
+      "src": "/snapdrama-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-192x192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512x512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/snapdrama-icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "form_factor": "wide",
+      "label": "瞬剧应用界面预览"
+    }
+  ],
+  "categories": ["entertainment", "video", "multimedia", "lifestyle"],
+  "lang": "zh-CN",
+  "dir": "ltr",
+  "prefer_related_applications": false,
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  }
+}
