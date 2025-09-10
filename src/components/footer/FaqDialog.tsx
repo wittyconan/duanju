@@ -5,7 +5,7 @@ import type { DialogProps } from './types';
 export function FaqDialog({ open, onOpenChange }: DialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-6xl max-h-[80vh] flex flex-col">
+      <DialogContent className="max-w-7xl w-[90vw] max-h-[80vh] flex flex-col">
         <DialogHeader className="text-center pb-4 flex-shrink-0">
           <div className="mx-auto mb-4 w-16 h-16 bg-amber-100 dark:bg-amber-900/20 rounded-full flex items-center justify-center">
             <HelpCircle className="w-8 h-8 text-amber-600" />

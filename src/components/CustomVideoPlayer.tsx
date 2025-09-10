@@ -44,12 +44,23 @@ export function CustomVideoPlayer({ src, onError, onLoadedMetadata, className, a
 
     // 为夸克网盘等直链设置请求头
     if (src) {
-      // 设置crossorigin属性来处理CORS
-      video.crossOrigin = 'anonymous';
-      
-      // 如果是夸克网盘链接，尝试设置referrer策略
-      if (src.includes('drive.quark.cn')) {
+      // 对于第三方视频源，不设置crossorigin避免CORS问题
+      if (src.includes('drive.quark.cn') || 
+          src.includes('quark.cn') ||
+          src.includes('aliyundrive.com') ||
+          src.includes('189.cn')) {
+        
+        // 移除crossorigin属性
+        video.removeAttribute('crossorigin');
+        
+        // 设置referrer策略为no-referrer
         video.setAttribute('referrerpolicy', 'no-referrer');
+        
+        // 设置preload属性
+        video.setAttribute('preload', 'metadata');
+      } else {
+        // 对于其他源，使用标准CORS设置
+        video.crossOrigin = 'anonymous';
       }
     }
 

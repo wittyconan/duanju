@@ -6,6 +6,11 @@ import { useFooterState } from './footer/useFooterState';
 import { AboutDialog } from './footer/AboutDialog';
 import { FaqDialog } from './footer/FaqDialog';
 import { ContactDialog } from './footer/ContactDialog';
+import { UserAgreementDialog } from './footer/UserAgreementDialog';
+import { PrivacyPolicyDialog } from './footer/PrivacyPolicyDialog';
+import { UserGuideDialog } from './footer/UserGuideDialog';
+import { FeedbackDialog } from './footer/FeedbackDialog';
+import { SupportDialog } from './footer/SupportDialog';
 
 export const Footer = React.memo(() => {
   const { state, openDialog, closeDialog } = useFooterState();
@@ -32,60 +37,76 @@ export const Footer = React.memo(() => {
             
             <div>
               <h4 className="font-semibold mb-4">关于</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li 
-                  className="cursor-pointer hover:text-foreground transition-colors"
-                  onClick={() => openDialog('aboutUs')}
-                >
-                  关于我们
+              <ul className="space-y-1 text-sm text-muted-foreground">
+                <li>
+                  <span 
+                    className="cursor-pointer hover:text-foreground transition-colors inline-block py-1"
+                    onClick={() => openDialog('aboutUs')}
+                  >
+                    关于我们
+                  </span>
                 </li>
-                <li 
-                  className="cursor-pointer hover:text-foreground transition-colors"
-                  onClick={() => openDialog('userAgreement')}
-                >
-                  用户协议
+                <li>
+                  <span 
+                    className="cursor-pointer hover:text-foreground transition-colors inline-block py-1"
+                    onClick={() => openDialog('userAgreement')}
+                  >
+                    用户协议
+                  </span>
                 </li>
-                <li 
-                  className="cursor-pointer hover:text-foreground transition-colors"
-                  onClick={() => openDialog('privacyPolicy')}
-                >
-                  隐私政策
+                <li>
+                  <span 
+                    className="cursor-pointer hover:text-foreground transition-colors inline-block py-1"
+                    onClick={() => openDialog('privacyPolicy')}
+                  >
+                    隐私政策
+                  </span>
                 </li>
-                <li 
-                  className="cursor-pointer hover:text-foreground transition-colors"
-                  onClick={() => openDialog('contactUs')}
-                >
-                  联系我们
+                <li>
+                  <span 
+                    className="cursor-pointer hover:text-foreground transition-colors inline-block py-1"
+                    onClick={() => openDialog('contactUs')}
+                  >
+                    联系我们
+                  </span>
                 </li>
               </ul>
             </div>
             
             <div>
               <h4 className="font-semibold mb-4">帮助</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li 
-                  className="cursor-pointer hover:text-foreground transition-colors"
-                  onClick={() => openDialog('userGuide')}
-                >
-                  使用说明
+              <ul className="space-y-1 text-sm text-muted-foreground">
+                <li>
+                  <span 
+                    className="cursor-pointer hover:text-foreground transition-colors inline-block py-1"
+                    onClick={() => openDialog('userGuide')}
+                  >
+                    使用说明
+                  </span>
                 </li>
-                <li 
-                  className="cursor-pointer hover:text-foreground transition-colors"
-                  onClick={() => openDialog('faq')}
-                >
-                  常见问题
+                <li>
+                  <span 
+                    className="cursor-pointer hover:text-foreground transition-colors inline-block py-1"
+                    onClick={() => openDialog('faq')}
+                  >
+                    常见问题
+                  </span>
                 </li>
-                <li 
-                  className="cursor-pointer hover:text-foreground transition-colors"
-                  onClick={() => openDialog('feedback')}
-                >
-                  意见反馈
+                <li>
+                  <span 
+                    className="cursor-pointer hover:text-foreground transition-colors inline-block py-1"
+                    onClick={() => openDialog('feedback')}
+                  >
+                    意见反馈
+                  </span>
                 </li>
-                <li 
-                  className="cursor-pointer hover:text-foreground transition-colors"
-                  onClick={() => openDialog('support')}
-                >
-                  技术支持
+                <li>
+                  <span 
+                    className="cursor-pointer hover:text-foreground transition-colors inline-block py-1"
+                    onClick={() => openDialog('support')}
+                  >
+                    技术支持
+                  </span>
                 </li>
               </ul>
             </div>
@@ -110,6 +131,31 @@ export const Footer = React.memo(() => {
       <ContactDialog 
         open={state.openDialog === 'contactUs'} 
         onOpenChange={() => state.openDialog === 'contactUs' && closeDialog()}
+      />
+      
+      <UserAgreementDialog 
+        open={state.openDialog === 'userAgreement'} 
+        onOpenChange={() => state.openDialog === 'userAgreement' && closeDialog()}
+      />
+      
+      <PrivacyPolicyDialog 
+        open={state.openDialog === 'privacyPolicy'} 
+        onOpenChange={() => state.openDialog === 'privacyPolicy' && closeDialog()}
+      />
+      
+      <UserGuideDialog 
+        open={state.openDialog === 'userGuide'} 
+        onOpenChange={() => state.openDialog === 'userGuide' && closeDialog()}
+      />
+      
+      <FeedbackDialog 
+        open={state.openDialog === 'feedback'} 
+        onOpenChange={() => state.openDialog === 'feedback' && closeDialog()}
+      />
+      
+      <SupportDialog 
+        open={state.openDialog === 'support'} 
+        onOpenChange={() => state.openDialog === 'support' && closeDialog()}
       />
     </>
   );

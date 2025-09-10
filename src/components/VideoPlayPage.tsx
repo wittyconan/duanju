@@ -10,7 +10,7 @@ import { ArrowLeft, Play } from 'lucide-react';
 import type { VideoItem } from '@/types';
 import { apiService } from '@/services/api';
 import { useNavigate, useParams } from 'react-router-dom';
-import { CustomVideoPlayer } from './CustomVideoPlayer';
+import { VideoPlayerWithFallback } from './VideoPlayerWithFallback';
 import { VideoInfo } from './VideoInfo';
 import { EpisodeList } from './EpisodeList';
 import { VideoError } from './VideoError';
@@ -174,14 +174,15 @@ export function VideoPlayPage() {
                 ) : error ? (
                   <VideoError
                     error={error}
-                    videoPic={video.pic}
+                    videoPic={video?.pic}
                     onRetry={() => loadEpisode(currentEpisode)}
                     onDirectPlay={handleTryDirectPlay}
                     onDownload={handleDownload}
                   />
                 ) : (
-                  <CustomVideoPlayer
+                  <VideoPlayerWithFallback
                     src={videoUrl}
+                    videoPic={video?.pic}
                     onError={handleVideoError}
                     onLoadedMetadata={() => setError(null)}
                     className="w-full h-full"
