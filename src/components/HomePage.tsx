@@ -195,12 +195,12 @@ export function HomePage() {
           />
         )}
         
-        <div className="px-4 py-6">
+        <div className="px-4 py-6 min-h-[70vh]">
           {loading ? (
             <VideoGridSkeleton count={18} />
-          ) : (
+          ) : videos && videos.length > 0 ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-4">
-              {videos?.map((video) => (
+              {videos.map((video) => (
                 <VideoCard
                   key={video.id}
                   video={video}
@@ -208,6 +208,16 @@ export function HomePage() {
                   onPlay={handleVideoPlay}
                 />
               ))}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-16 text-center">
+              <div className="text-6xl mb-4">📺</div>
+              <h3 className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">
+                暂无视频内容
+              </h3>
+              <p className="text-gray-500 dark:text-gray-400">
+                当前分类下还没有视频，请尝试切换到其他分类
+              </p>
             </div>
           )}
         </div>
