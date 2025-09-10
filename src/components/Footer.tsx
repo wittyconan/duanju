@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useCallback } from 'react';
+import React from 'react';
 import { FOOTER_CONFIG } from '@/config/footer';
 import { useFooterState } from './footer/useFooterState';
 import { AboutDialog } from './footer/AboutDialog';
@@ -8,17 +8,7 @@ import { FaqDialog } from './footer/FaqDialog';
 import { ContactDialog } from './footer/ContactDialog';
 
 export const Footer = React.memo(() => {
-  const { state, openDialog, closeDialog, setEmailCopied } = useFooterState();
-
-  const copyEmail = useCallback(async () => {
-    try {
-      await navigator.clipboard.writeText(FOOTER_CONFIG.contact.email);
-      setEmailCopied(true);
-      setTimeout(() => setEmailCopied(false), FOOTER_CONFIG.system.copyTimeout);
-    } catch (err) {
-      console.error('Failed to copy email:', err);
-    }
-  }, [setEmailCopied]);
+  const { state, openDialog, closeDialog } = useFooterState();
 
   return (
     <>
@@ -120,8 +110,6 @@ export const Footer = React.memo(() => {
       <ContactDialog 
         open={state.openDialog === 'contactUs'} 
         onOpenChange={() => state.openDialog === 'contactUs' && closeDialog()}
-        emailCopied={state.emailCopied}
-        copyEmail={copyEmail}
       />
     </>
   );

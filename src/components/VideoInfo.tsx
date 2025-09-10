@@ -3,7 +3,9 @@ import type { VideoItem } from '@/types';
 
 interface VideoInfoProps {
   video: VideoItem;
-  videoInfo?: any;
+  videoInfo?: {
+    description?: string;
+  };
 }
 
 export function VideoInfo({ video, videoInfo }: VideoInfoProps) {

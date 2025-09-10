@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import type { VideoItem } from '@/types';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -20,21 +20,9 @@ export function VideoDetailModal({ video, isOpen, onClose, onPlay }: VideoDetail
   const [totalEpisodes, setTotalEpisodes] = useState<number>(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [, setAdditionalInfo] = useState<any>(null);
+  const [, setAdditionalInfo] = useState<{ description?: string } | null>(null);
 
-  useEffect(() => {
-    if (video && isOpen) {
-      loadVideoDetails();
-    } else {
-      // 重置状态
-      setDetailedVideo(null);
-      setTotalEpisodes(1);
-      setError(null);
-      setAdditionalInfo(null);
-    }
-  }, [video, isOpen]);
-
-  const loadVideoDetails = async () => {
+  const loadVideoDetails = useCallback(async () => {
     if (!video) return;
     
     setLoading(true);
@@ -79,7 +67,19 @@ export function VideoDetailModal({ video, isOpen, onClose, onPlay }: VideoDetail
     } finally {
       setLoading(false);
     }
-  };
+  }, [video]);
+
+  useEffect(() => {
+    if (video && isOpen) {
+      loadVideoDetails();
+    } else {
+      // 重置状态
+      setDetailedVideo(null);
+      setTotalEpisodes(1);
+      setError(null);
+      setAdditionalInfo(null);
+    }
+  }, [video, isOpen, loadVideoDetails]);
 
   const parseEpisodes = (remarks: string): number[] => {
     if (!remarks) return [1];

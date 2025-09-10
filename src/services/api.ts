@@ -10,7 +10,7 @@ interface PlayResponse {
     label: string;
     parsedUrl: string;
     parseInfo: {
-      headers: Record<string, any>;
+      headers: Record<string, string>;
       type: string;
     };
   };
@@ -20,7 +20,7 @@ interface PlayResponse {
 }
 
 class ApiService {
-  private cache = new Map<string, { data: any; timestamp: number }>();
+  private cache = new Map<string, { data: unknown; timestamp: number }>();
   private readonly CACHE_DURATION = 5 * 60 * 1000; // 5分钟缓存
 
   private getCacheKey(endpoint: string): string {
@@ -141,7 +141,7 @@ class ApiService {
     }
   }
 
-  async getVideoDetailById(videoId: number): Promise<{ videoInfo: any; totalEpisodes: number } | null> {
+  async getVideoDetailById(videoId: number): Promise<{ videoInfo: PlayResponse; totalEpisodes: number } | null> {
     try {
       // 使用 parse/single 接口获取详细信息，episode从0开始
       const response = await this.request<PlayResponse>(`/vod/parse/single?id=${videoId}&episode=0`, false);
@@ -155,7 +155,7 @@ class ApiService {
     }
   }
 
-  async getVideoUrl(id: number, episode: number): Promise<{ url: string; videoInfo: any }> {
+  async getVideoUrl(id: number, episode: number): Promise<{ url: string; videoInfo: PlayResponse }> {
     const params = new URLSearchParams({
       id: id.toString(),
       episode: (episode - 1).toString() // 转换为基于0的索引

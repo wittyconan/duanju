@@ -52,7 +52,7 @@ export function HomePage() {
         }
       }
     }
-  }, [categories, categoryId, location.pathname, activeCategory, isRecommendMode]);
+  }, [categories, categoryId, location.pathname, activeCategory, isRecommendMode, navigate]);
 
   const loadCategories = async () => {
     setCategoriesLoading(true);

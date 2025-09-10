@@ -1,10 +1,9 @@
-import { Phone, MessageCircle, Users, Copy, Check } from 'lucide-react';
+import { Phone, MessageCircle, Users } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
 import { FOOTER_CONFIG } from '@/config/footer';
 import type { ContactDialogProps } from './types';
 
-export function ContactDialog({ open, onOpenChange, emailCopied, copyEmail }: ContactDialogProps) {
+export function ContactDialog({ open, onOpenChange }: ContactDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl">

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -24,7 +24,7 @@ export function VideoPlayPage() {
   const [videoUrl, setVideoUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [episodeList, setEpisodeList] = useState<number[]>([]);
-  const [videoInfo, setVideoInfo] = useState<any>(null);
+  const [videoInfo, setVideoInfo] = useState<{ totalEpisodes?: number; description?: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pageLoading, setPageLoading] = useState(true);
 
@@ -55,19 +55,7 @@ export function VideoPlayPage() {
     }
   }, [videoId]);
 
-  useEffect(() => {
-    if (video && currentEpisode) {
-      loadEpisode(currentEpisode);
-      // 只有当URL参数与当前集数不匹配时才更新URL
-      const currentEpisodeFromUrl = parseInt(episodeParam || '1');
-      if (currentEpisode !== currentEpisodeFromUrl) {
-        navigate(`/play/${video.id}/${currentEpisode}`, { replace: true });
-      }
-      document.title = `瞬剧｜${video.name} - 第${currentEpisode}集`;
-    }
-  }, [video, currentEpisode]);
-
-  const loadEpisode = async (episode: number) => {
+  const loadEpisode = useCallback(async (episode: number) => {
     if (!video) return;
     
     setLoading(true);
@@ -90,7 +78,19 @@ export function VideoPlayPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [video]);
+
+  useEffect(() => {
+    if (video && currentEpisode) {
+      loadEpisode(currentEpisode);
+      // 只有当URL参数与当前集数不匹配时才更新URL
+      const currentEpisodeFromUrl = parseInt(episodeParam || '1');
+      if (currentEpisode !== currentEpisodeFromUrl) {
+        navigate(`/play/${video.id}/${currentEpisode}`, { replace: true });
+      }
+      document.title = `瞬剧｜${video.name} - 第${currentEpisode}集`;
+    }
+  }, [video, currentEpisode, episodeParam, navigate, loadEpisode]);
 
   const handleEpisodeChange = (episode: number) => {
     setCurrentEpisode(episode);

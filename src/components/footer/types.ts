@@ -3,7 +3,4 @@ export interface DialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export interface ContactDialogProps extends DialogProps {
-  emailCopied: boolean;
-  copyEmail: () => void;
-}
+export type ContactDialogProps = DialogProps;
