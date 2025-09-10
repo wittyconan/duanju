@@ -3,6 +3,7 @@ import { HomePage } from './components/HomePage';
 import { VideoPlayPage } from './components/VideoPlayPage';
 import { ThemeProvider } from './contexts/ThemeContext';
 import ErrorBoundary from './components/ErrorBoundary';
+import { Toaster } from './components/ui/sonner';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
               <Route path="/play/:videoId/:episode?" element={<VideoPlayPage />} />
             </Routes>
           </ErrorBoundary>
+          <Toaster />
         </Router>
       </ThemeProvider>
     </ErrorBoundary>

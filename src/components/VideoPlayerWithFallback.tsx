@@ -38,8 +38,12 @@ interface VideoPlayerWithFallbackProps {
   videoPic?: string;
   onError?: () => void;
   onLoadedMetadata?: () => void;
+  onEnded?: () => void;
   className?: string;
   autoPlay?: boolean;
+  autoPlayNext?: boolean;
+  playbackRate?: number;
+  onPlaybackRateChange?: (rate: number) => void;
 }
 
 type PlaybackMode = 'direct' | 'external' | 'error';
@@ -49,8 +53,12 @@ export function VideoPlayerWithFallback({
   videoPic,
   onError, 
   onLoadedMetadata, 
+  onEnded,
   className, 
-  autoPlay = true 
+  autoPlay = true,
+  autoPlayNext = false,
+  playbackRate = 1,
+  onPlaybackRateChange
 }: VideoPlayerWithFallbackProps) {
   const [playbackMode, setPlaybackMode] = useState<PlaybackMode>('direct');
   const [errorCount, setErrorCount] = useState(0);
@@ -86,8 +94,12 @@ export function VideoPlayerWithFallback({
         src={src}
         onError={handleVideoError}
         onLoadedMetadata={onLoadedMetadata}
+        onEnded={onEnded}
         className={className}
         autoPlay={autoPlay}
+        autoPlayNext={autoPlayNext}
+        playbackRate={playbackRate}
+        onPlaybackRateChange={onPlaybackRateChange}
       />
     );
   }

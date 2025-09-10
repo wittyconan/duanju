@@ -27,6 +27,8 @@ export function VideoPlayPage() {
   const [videoInfo, setVideoInfo] = useState<{ totalEpisodes?: number; description?: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pageLoading, setPageLoading] = useState(true);
+  const [autoPlayNext, setAutoPlayNext] = useState(true);
+  const [playbackRate, setPlaybackRate] = useState(1);
 
   useEffect(() => {
     if (videoId) {
@@ -111,6 +113,16 @@ export function VideoPlayPage() {
     setError('视频播放出错，可能是网络问题或链接限制，建议尝试下载观看');
   };
 
+  const handleVideoEnded = () => {
+    // 自动播放下一集
+    if (autoPlayNext && episodeList.length > 0) {
+      const nextEpisode = currentEpisode + 1;
+      if (nextEpisode <= episodeList.length) {
+        setCurrentEpisode(nextEpisode);
+      }
+    }
+  };
+
   const handleTryDirectPlay = () => {
     if (videoUrl) {
       // 在新窗口打开视频链接，让浏览器直接处理
@@ -185,6 +197,10 @@ export function VideoPlayPage() {
                     videoPic={video?.pic}
                     onError={handleVideoError}
                     onLoadedMetadata={() => setError(null)}
+                    onEnded={handleVideoEnded}
+                    autoPlayNext={autoPlayNext}
+                    playbackRate={playbackRate}
+                    onPlaybackRateChange={setPlaybackRate}
                     className="w-full h-full"
                   />
                 )}
