@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ThemeToggle } from './ThemeToggle';
 import { ArrowLeft, Play } from 'lucide-react';
 import type { VideoItem } from '@/types';
 import { apiService } from '@/services/api';
@@ -125,22 +126,25 @@ export function VideoPlayPage() {
       {/* 顶部导航 */}
       <div className="sticky top-0 z-50 bg-background/80 backdrop-blur-sm border-b">
         <div className="max-w-7xl mx-auto px-4 py-3">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate('/')}
-              className="gap-2"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              返回
-            </Button>
-            <h1 className="text-lg font-semibold truncate">{video.name}</h1>
-            {episodeList.length > 1 && (
-              <Badge variant="secondary">
-                第{currentEpisode}集 / 共{episodeList.length}集
-              </Badge>
-            )}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate('/')}
+                className="gap-2"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                返回
+              </Button>
+              <h1 className="text-lg font-semibold truncate">{video.name}</h1>
+              {episodeList.length > 1 && (
+                <Badge variant="secondary">
+                  第{currentEpisode}集 / 共{episodeList.length}集
+                </Badge>
+              )}
+            </div>
+            <ThemeToggle />
           </div>
         </div>
       </div>

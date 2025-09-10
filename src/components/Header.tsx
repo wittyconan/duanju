@@ -1,6 +1,7 @@
 import { SearchBar } from './SearchBar';
 import { Button } from '@/components/ui/button';
-import { Film, Home, TrendingUp, Clock } from 'lucide-react';
+import { ThemeToggle } from './ThemeToggle';
+import { Home, TrendingUp, Clock } from 'lucide-react';
 
 interface HeaderProps {
   onSearch: (query: string) => void;
@@ -11,8 +12,13 @@ export function Header({ onSearch, onNavClick }: HeaderProps) {
   return (
     <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-sm border-b">
       <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-        <div className="flex items-center space-x-2">
-          <Film className="h-6 w-6 text-primary" />
+        <div className="flex items-center space-x-2 cursor-pointer select-none">
+          <img 
+            src="/snapdrama-icon.svg" 
+            alt="瞬剧" 
+            className="h-6 w-6 dark:opacity-80 dark:brightness-90 pointer-events-none"
+            draggable="false"
+          />
           <h1 className="text-xl font-bold">瞬剧</h1>
         </div>
         
@@ -48,6 +54,7 @@ export function Header({ onSearch, onNavClick }: HeaderProps) {
             <TrendingUp className="h-4 w-4" />
             推荐
           </Button>
+          <ThemeToggle />
         </nav>
       </div>
     </header>

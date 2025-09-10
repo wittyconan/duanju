@@ -4,6 +4,8 @@ import { Header } from './Header';
 import { CategoryNav } from './CategoryNav';
 import { VideoCard } from './VideoCard';
 import { VideoDetailModal } from './VideoDetailModal';
+import { Footer } from './Footer';
+import { BackToTop } from './BackToTop';
 import { apiService } from '@/services/api';
 import type { VideoCategory, VideoItem } from '@/types';
 import { Loader2 } from 'lucide-react';
@@ -206,6 +208,9 @@ export function HomePage() {
         onClose={() => setIsModalOpen(false)}
         onPlay={handleVideoPlay}
       />
+      
+      <Footer />
+      <BackToTop />
     </div>
   );
 }
