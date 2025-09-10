@@ -12,9 +12,50 @@
     <title>瞬剧</title>
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <div id="root">
+      <div id="loading-fallback" style="display: none; min-height: 100vh; display: flex; align-items: center; justify-content: center; font-family: system-ui, -apple-system, sans-serif;">
+        <div style="text-align: center; max-width: 400px; padding: 20px;">
+          <div style="margin-bottom: 16px;">
+            <svg style="margin: 0 auto; height: 48px; width: 48px; color: #ef4444;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 19.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+          </div>
+          <h2 style="font-size: 20px; font-weight: 600; margin-bottom: 8px; color: #111827;">
+            页面加载失败
+          </h2>
+          <p style="color: #6b7280; margin-bottom: 16px;">
+            页面资源加载失败，这可能是由于网络问题或缓存导致的。请尝试刷新页面或清除浏览器缓存。
+          </p>
+          <button onclick="window.location.reload()" style="background: #6366f1; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px;">
+            刷新页面
+          </button>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.tsx" onerror="handleScriptError(event)"></script>
     <script>
+      function handleScriptError(event) {
+        console.error('Script loading failed:', event);
+        document.getElementById('loading-fallback').style.display = 'flex';
+        document.getElementById('root').style.display = 'none';
+      }
+
+      // Global error handler for module loading failures
+      window.addEventListener('error', function(event) {
+        if (event.target && (event.target.tagName === 'SCRIPT' || event.target.tagName === 'LINK')) {
+          console.error('Resource loading failed:', event.target.src || event.target.href);
+          handleScriptError(event);
+        }
+      });
+
+      // Handle unhandled promise rejections (like dynamic imports)
+      window.addEventListener('unhandledrejection', function(event) {
+        console.error('Unhandled promise rejection:', event.reason);
+        if (event.reason && event.reason.message && event.reason.message.includes('Failed to fetch dynamically imported module')) {
+          handleScriptError(event);
+        }
+      });
+
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
           navigator.serviceWorker.register('/sw.js')
