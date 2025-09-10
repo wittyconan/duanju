@@ -2,13 +2,14 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { Header } from './Header';
 import { CategoryNav } from './CategoryNav';
+import { CategoryNavSkeleton } from './CategoryNavSkeleton';
 import { VideoCard } from './VideoCard';
+import { VideoGridSkeleton } from './VideoCardSkeleton';
 import { VideoDetailModal } from './VideoDetailModal';
 import { Footer } from './Footer';
 import { BackToTop } from './BackToTop';
 import { apiService } from '@/services/api';
 import type { VideoCategory, VideoItem } from '@/types';
-import { Loader2 } from 'lucide-react';
 
 export function HomePage() {
   const navigate = useNavigate();
@@ -21,6 +22,7 @@ export function HomePage() {
   const [isRecommendMode, setIsRecommendMode] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState<VideoItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
 
   useEffect(() => {
     loadCategories();
@@ -53,11 +55,14 @@ export function HomePage() {
   }, [categories, categoryId, location.pathname, activeCategory, isRecommendMode]);
 
   const loadCategories = async () => {
+    setCategoriesLoading(true);
     try {
       const response = await apiService.getCategories();
       setCategories(response.categories);
     } catch (error) {
       console.error('Failed to load categories:', error);
+    } finally {
+      setCategoriesLoading(false);
     }
   };
 
@@ -175,18 +180,20 @@ export function HomePage() {
       <Header onSearch={handleSearch} onNavClick={handleNavClick} />
       
       <main className="max-w-7xl mx-auto">
-        <CategoryNav 
-          categories={categories}
-          activeCategory={isRecommendMode ? null : activeCategory}
-          onCategorySelect={handleCategorySelect}
-          isRecommendMode={isRecommendMode}
-        />
+        {categoriesLoading ? (
+          <CategoryNavSkeleton />
+        ) : (
+          <CategoryNav 
+            categories={categories}
+            activeCategory={isRecommendMode ? null : activeCategory}
+            onCategorySelect={handleCategorySelect}
+            isRecommendMode={isRecommendMode}
+          />
+        )}
         
         <div className="px-4 py-6">
           {loading ? (
-            <div className="flex justify-center items-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin" />
-            </div>
+            <VideoGridSkeleton count={18} />
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-4">
               {videos?.map((video) => (

@@ -3,6 +3,9 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ThemeToggle } from './ThemeToggle';
+import { Footer } from './Footer';
+import { BackToTop } from './BackToTop';
+import { VideoPlayPageSkeleton } from './VideoPlayPageSkeleton';
 import { ArrowLeft, Play } from 'lucide-react';
 import type { VideoItem } from '@/types';
 import { apiService } from '@/services/api';
@@ -23,6 +26,7 @@ export function VideoPlayPage() {
   const [episodeList, setEpisodeList] = useState<number[]>([]);
   const [videoInfo, setVideoInfo] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
+  const [pageLoading, setPageLoading] = useState(true);
 
   useEffect(() => {
     if (videoId) {
@@ -44,6 +48,10 @@ export function VideoPlayPage() {
           }
         }
       }
+      // 添加延迟让用户能看到骨架屏
+      setTimeout(() => {
+        setPageLoading(false);
+      }, 800);
     }
   }, [videoId]);
 
@@ -109,6 +117,10 @@ export function VideoPlayPage() {
       window.open(videoUrl, '_blank');
     }
   };
+
+  if (pageLoading) {
+    return <VideoPlayPageSkeleton />;
+  }
 
   if (!video) {
     return (
@@ -217,6 +229,9 @@ export function VideoPlayPage() {
           )}
         </div>
       </div>
+      
+      <Footer />
+      <BackToTop />
     </div>
   );
 }
