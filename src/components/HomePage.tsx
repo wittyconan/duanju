@@ -30,18 +30,20 @@ export function HomePage() {
 
   useEffect(() => {
     if (categories.length > 0) {
-      if (location.pathname === '/recommend') {
+      const currentPath = location.pathname;
+      
+      if (currentPath === '/recommend' && !isRecommendMode) {
         setIsRecommendMode(true);
         setActiveCategory(null);
         loadRecommendedVideos();
       } else if (categoryId) {
         const targetCategoryId = parseInt(categoryId);
-        if (targetCategoryId !== activeCategory) {
+        if (targetCategoryId !== activeCategory || isRecommendMode) {
           setIsRecommendMode(false);
           setActiveCategory(targetCategoryId);
           loadVideosByCategory(targetCategoryId);
         }
-      } else if (location.pathname === '/' && !isRecommendMode && activeCategory === null) {
+      } else if (currentPath === '/' && activeCategory === null && !isRecommendMode) {
         // 默认选择第一个分类
         const firstCategory = categories[0]?.type_id;
         if (firstCategory) {
@@ -52,7 +54,7 @@ export function HomePage() {
         }
       }
     }
-  }, [categories, categoryId, location.pathname, activeCategory, isRecommendMode, navigate]);
+  }, [categories, categoryId, location.pathname, navigate]);
 
   const loadCategories = async () => {
     setCategoriesLoading(true);
@@ -67,6 +69,7 @@ export function HomePage() {
   };
 
   const loadRecommendedVideos = async () => {
+    if (loading) return; // 防止重复加载
     setLoading(true);
     try {
       const videos = await apiService.getRecommended();
@@ -80,6 +83,7 @@ export function HomePage() {
   };
 
   const loadVideosByCategory = async (categoryId: number | null) => {
+    if (loading) return; // 防止重复加载
     setLoading(true);
     try {
       const videos = categoryId 

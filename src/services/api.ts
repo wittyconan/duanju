@@ -38,7 +38,7 @@ class ApiService {
     if (useCache && this.cache.has(cacheKey)) {
       const cached = this.cache.get(cacheKey)!;
       if (this.isCacheValid(cached.timestamp)) {
-        return cached.data;
+        return cached.data as T;
       }
     }
 

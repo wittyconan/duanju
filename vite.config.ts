@@ -11,6 +11,26 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  build: {
+    // 启用代码压缩
+    minify: true,
+    // 生成 source map（可选）
+    sourcemap: false,
+    // 分包策略
+    rollupOptions: {
+      treeshake: true,
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          ui: ['lucide-react', '@radix-ui/react-dialog', '@radix-ui/react-scroll-area'],
+        },
+      },
+    },
+  },
+  esbuild: {
+    // 移除console和debugger
+    drop: ['console', 'debugger'],
+  },
   server: {
     // 开发环境代理配置，帮助解决一些CORS问题
     proxy: {
@@ -19,8 +39,8 @@ export default defineConfig({
         target: 'https://api.r2afosne.dpdns.org',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api-proxy/, ''),
-        configure: (proxy, options) => {
-          proxy.on('proxyReq', (proxyReq, req, res) => {
+        configure: (proxy, _options) => {
+          proxy.on('proxyReq', (proxyReq, _req, _res) => {
             // 设置必要的请求头
             proxyReq.setHeader('Origin', 'https://api.r2afosne.dpdns.org');
             proxyReq.setHeader('Referer', 'https://api.r2afosne.dpdns.org');

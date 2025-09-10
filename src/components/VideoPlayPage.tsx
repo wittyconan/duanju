@@ -56,7 +56,7 @@ export function VideoPlayPage() {
   }, [videoId]);
 
   const loadEpisode = useCallback(async (episode: number) => {
-    if (!video) return;
+    if (!video || loading) return; // 防止重复加载
     
     setLoading(true);
     setError(null);
@@ -78,7 +78,7 @@ export function VideoPlayPage() {
     } finally {
       setLoading(false);
     }
-  }, [video]);
+  }, [video, loading]);
 
   useEffect(() => {
     if (video && currentEpisode) {
@@ -90,7 +90,7 @@ export function VideoPlayPage() {
       }
       document.title = `瞬剧｜${video.name} - 第${currentEpisode}集`;
     }
-  }, [video, currentEpisode, episodeParam, navigate, loadEpisode]);
+  }, [video, currentEpisode, episodeParam, navigate]);
 
   const handleEpisodeChange = (episode: number) => {
     setCurrentEpisode(episode);
@@ -212,13 +212,13 @@ export function VideoPlayPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <VideoInfo video={video} videoInfo={videoInfo} />
+                <VideoInfo video={video} videoInfo={videoInfo || undefined} />
               </CardContent>
             </Card>
           </div>
 
           {/* 右侧选集列表 */}
-          {(episodeList.length > 0 || videoInfo?.totalEpisodes > 1) && (
+          {(episodeList.length > 0 || (videoInfo?.totalEpisodes && videoInfo.totalEpisodes > 1)) && (
             <div className="lg:col-span-1">
               <EpisodeList
                 episodes={episodeList}

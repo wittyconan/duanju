@@ -13,7 +13,8 @@ const CONFIG = {
   // 样式类名配置
   styles: {
     card: 'relative cursor-pointer transform transition-all duration-300 hover:scale-105 hover:z-10 group rounded-lg overflow-hidden shadow-lg hover:shadow-2xl',
-    imageContainer: 'w-full h-full object-cover',
+    imageContainer: 'absolute inset-0 w-full h-full object-cover object-center',
+    aspectContainer: 'aspect-[3/4] relative bg-gray-100',
     overlay: 'absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity',
     playButton: 'absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300',
     buttonStyle: 'bg-white/95 backdrop-blur-sm hover:bg-white text-black border-none shadow-xl scale-90 hover:scale-100 transition-transform',
@@ -45,7 +46,7 @@ export function VideoCard({ video, onClick, onPlay }: VideoCardProps) {
       className={CONFIG.styles.card}
       onClick={() => onClick(video)}
     >
-      <div className={`aspect-[${CONFIG.fallback.aspectRatio}] relative bg-gray-100`}>
+      <div className={CONFIG.styles.aspectContainer}>
         <img 
           src={video.pic} 
           alt={video.name}
