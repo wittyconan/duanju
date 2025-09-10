@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search } from 'lucide-react';
@@ -6,10 +6,16 @@ import { Search } from 'lucide-react';
 interface SearchBarProps {
   onSearch: (query: string) => void;
   placeholder?: string;
+  initialValue?: string;
 }
 
-export function SearchBar({ onSearch, placeholder = "搜索影片..." }: SearchBarProps) {
-  const [query, setQuery] = useState('');
+export function SearchBar({ onSearch, placeholder = "搜索影片...", initialValue = '' }: SearchBarProps) {
+  const [query, setQuery] = useState(initialValue);
+
+  // 当 initialValue 改变时更新 query
+  useEffect(() => {
+    setQuery(initialValue);
+  }, [initialValue]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

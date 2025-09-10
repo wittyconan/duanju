@@ -111,22 +111,9 @@ export function HomePage() {
   };
 
   const handleSearch = async (query: string) => {
-    setLoading(true);
-    setIsRecommendMode(false);
-    setActiveCategory(null);
-    setCurrentPage(1);
-    navigate('/');
-    try {
-      const result = await apiService.searchVideos(query);
-      setVideos(result.videos || []);
-      setPagination({ total: 0, totalPages: 0, currentPage: 1 }); // 搜索暂不支持分页显示
-    } catch (error) {
-      console.error('Failed to search videos:', error);
-      setVideos([]);
-      setPagination({ total: 0, totalPages: 0, currentPage: 1 });
-    } finally {
-      setLoading(false);
-    }
+    if (!query.trim()) return;
+    // 跳转到搜索页面
+    navigate(`/search?q=${encodeURIComponent(query)}`);
   };
 
   const handleCategorySelect = (categoryId: number | null) => {
