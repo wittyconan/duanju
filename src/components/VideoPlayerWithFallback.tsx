@@ -3,6 +3,36 @@ import { Button } from '@/components/ui/button';
 import { AlertTriangle, ExternalLink, RefreshCw } from 'lucide-react';
 import { CustomVideoPlayer } from './CustomVideoPlayer';
 
+// 页面级配置参数
+const CONFIG = {
+  // 样式类名配置
+  styles: {
+    container: 'relative rounded-lg overflow-hidden',
+    backgroundContainer: 'relative rounded-lg overflow-hidden',
+    overlay: 'absolute inset-0 flex flex-col items-center justify-center bg-white/50 dark:bg-black/50 backdrop-blur-sm p-8 rounded-lg',
+    dialog: 'bg-white/20 dark:bg-white/15 backdrop-blur-md rounded-lg p-8 max-w-md w-full border border-white/30 dark:border-white/30',
+    dialogCenter: 'bg-white/20 dark:bg-white/15 backdrop-blur-md rounded-lg p-8 max-w-md w-full text-center border border-white/30 dark:border-white/30',
+    icon: {
+      warning: 'w-12 h-12 text-yellow-500 mb-4 mx-auto',
+      error: 'w-12 h-12 text-red-500 mb-4 mx-auto'
+    },
+    title: 'text-lg font-semibold text-gray-800 dark:text-white text-center mb-2',
+    description: 'text-sm text-gray-600 dark:text-gray-200 text-center mb-6',
+    errorDescription: 'text-sm text-gray-600 dark:text-gray-200 mb-4',
+    buttonGroup: 'flex flex-col gap-3 w-full',
+    button: {
+      primary: 'flex items-center justify-center gap-2',
+      secondary: 'flex items-center justify-center gap-2'
+    }
+  },
+  
+  // 背景样式配置
+  background: {
+    light: 'bg-gray-100',
+    dark: 'dark:bg-black'
+  }
+};
+
 interface VideoPlayerWithFallbackProps {
   src: string;
   videoPic?: string;
@@ -67,7 +97,7 @@ export function VideoPlayerWithFallback({
   if (playbackMode === 'external') {
     return (
       <div 
-        className={`relative bg-gray-100 dark:bg-black rounded-lg overflow-hidden ${className}`}
+        className={`${CONFIG.background.light} ${CONFIG.background.dark} ${CONFIG.styles.backgroundContainer} ${className}`}
         style={{
           backgroundImage: videoPic ? `url(${videoPic})` : undefined,
           backgroundSize: 'cover',
@@ -75,20 +105,20 @@ export function VideoPlayerWithFallback({
           backgroundRepeat: 'no-repeat'
         }}
       >
-        <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/50 dark:bg-black/50 backdrop-blur-sm p-8">
-          <div className="bg-white/20 dark:bg-white/15 backdrop-blur-md rounded-lg p-8 max-w-md w-full border border-white/30 dark:border-white/30">
-            <AlertTriangle className="w-12 h-12 text-yellow-500 mb-4 mx-auto" />
-            <h3 className="text-lg font-semibold text-gray-800 dark:text-white text-center mb-2">播放受限</h3>
-            <p className="text-sm text-gray-600 dark:text-gray-200 text-center mb-6">
+        <div className={CONFIG.styles.overlay}>
+          <div className={CONFIG.styles.dialog}>
+            <AlertTriangle className={CONFIG.styles.icon.warning} />
+            <h3 className={CONFIG.styles.title}>播放受限</h3>
+            <p className={CONFIG.styles.description}>
               由于跨域限制，无法在当前页面播放此视频。
               <br />
               请尝试以下解决方案：
             </p>
             
-            <div className="flex flex-col gap-3 w-full">
+            <div className={CONFIG.styles.buttonGroup}>
               <Button
                 onClick={openInNewTab}
-                className="flex items-center justify-center gap-2"
+                className={CONFIG.styles.button.primary}
               >
                 <ExternalLink className="w-4 h-4" />
                 在新标签页打开
@@ -97,7 +127,7 @@ export function VideoPlayerWithFallback({
               <Button
                 variant="outline"
                 onClick={handleRetry}
-                className="flex items-center justify-center gap-2"
+                className={CONFIG.styles.button.secondary}
               >
                 <RefreshCw className="w-4 h-4" />
                 重新尝试播放
@@ -112,7 +142,7 @@ export function VideoPlayerWithFallback({
   // 错误状态
   return (
     <div 
-      className={`relative bg-gray-100 dark:bg-black rounded-lg overflow-hidden ${className}`}
+      className={`${CONFIG.background.light} ${CONFIG.background.dark} ${CONFIG.styles.backgroundContainer} ${className}`}
       style={{
         backgroundImage: videoPic ? `url(${videoPic})` : undefined,
         backgroundSize: 'cover',
@@ -120,13 +150,13 @@ export function VideoPlayerWithFallback({
         backgroundRepeat: 'no-repeat'
       }}
     >
-      <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/50 dark:bg-black/50 backdrop-blur-sm p-8">
-        <div className="bg-white/20 dark:bg-white/15 backdrop-blur-md rounded-lg p-8 max-w-md w-full text-center border border-white/30 dark:border-white/30">
-          <AlertTriangle className="w-12 h-12 text-red-500 mb-4 mx-auto" />
-          <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-2">
+      <div className={CONFIG.styles.overlay}>
+        <div className={CONFIG.styles.dialogCenter}>
+          <AlertTriangle className={CONFIG.styles.icon.error} />
+          <h3 className={CONFIG.styles.title}>
             播放失败
           </h3>
-          <p className="text-sm text-gray-600 dark:text-gray-200 mb-4">
+          <p className={CONFIG.styles.errorDescription}>
             视频无法播放，可能是网络问题或视频源已失效
           </p>
           <Button

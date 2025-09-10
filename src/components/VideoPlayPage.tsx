@@ -165,8 +165,8 @@ export function VideoPlayPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* 左侧视频播放器 */}
           <div className="lg:col-span-2">
-            <div className="overflow-hidden rounded-lg bg-black">
-              <div className="aspect-video bg-black relative">{/* 移除了 overflow-hidden 和 rounded-t-lg */}
+            <div className="overflow-hidden rounded-lg">
+              <div className="aspect-video relative">
                 {loading ? (
                   <div className="flex items-center justify-center h-full">
                     <div className="text-white">加载中...</div>
