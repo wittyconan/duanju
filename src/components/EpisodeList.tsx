@@ -23,7 +23,7 @@ export function EpisodeList({ episodes, currentEpisode, onEpisodeChange, loading
         </p>
       </CardHeader>
       <CardContent className="pr-2">
-        <ScrollArea className="h-96 pr-4">
+        <ScrollArea className="h-150 pr-4">
           {episodes.length === 0 ? (
             <div className="flex items-center justify-center h-32 text-muted-foreground">
               加载集数中...

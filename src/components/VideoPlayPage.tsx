@@ -2,11 +2,11 @@ import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ThemeToggle } from './ThemeToggle';
+import { Header } from './Header';
 import { Footer } from './Footer';
 import { BackToTop } from './BackToTop';
 import { VideoPlayPageSkeleton } from './VideoPlayPageSkeleton';
-import { ArrowLeft, Play } from 'lucide-react';
+import { Play } from 'lucide-react';
 import type { VideoItem } from '@/types';
 import { apiService } from '@/services/api';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -153,14 +153,26 @@ export function VideoPlayPage() {
     );
   }
 
+  const handleSearch = (query: string) => {
+    navigate(`/search?q=${encodeURIComponent(query)}`);
+  };
+
+  const handleNavClick = (type: 'home' | 'latest' | 'recommended') => {
+    if (type === 'home') {
+      navigate('/');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
-      {/* 顶部导航 */}
-      <div className="sticky top-0 z-50 bg-background/80 backdrop-blur-sm border-b">
+      <Header onSearch={handleSearch} onNavClick={handleNavClick} />
+      
+      {/* 视频信息栏 */}
+      <div className="bg-background/80 backdrop-blur-sm border-b">
         <div className="max-w-7xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Button
+              {/* <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => navigate('/')}
@@ -168,7 +180,7 @@ export function VideoPlayPage() {
               >
                 <ArrowLeft className="h-4 w-4" />
                 返回
-              </Button>
+              </Button> */}
               <h1 className="text-lg font-semibold truncate">{video.name}</h1>
               {episodeList.length > 1 && (
                 <Badge variant="secondary">
@@ -176,12 +188,11 @@ export function VideoPlayPage() {
                 </Badge>
               )}
             </div>
-            <ThemeToggle />
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-6">
+      <div className="max-w-7xl mx-auto px-4 py-6 min-h-[70vh]">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* 左侧视频播放器 */}
           <div className="lg:col-span-2">
