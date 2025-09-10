@@ -14,6 +14,7 @@ import { VideoPlayerWithFallback } from './VideoPlayerWithFallback';
 import { VideoInfo } from './VideoInfo';
 import { EpisodeList } from './EpisodeList';
 import { VideoError } from './VideoError';
+import { toast } from 'sonner';
 
 export function VideoPlayPage() {
   const navigate = useNavigate();
@@ -119,6 +120,12 @@ export function VideoPlayPage() {
       const nextEpisode = currentEpisode + 1;
       if (nextEpisode <= episodeList.length) {
         setCurrentEpisode(nextEpisode);
+      } else {
+        // 已经是最后一集
+        toast.info('全部播放完毕', {
+          duration: 2000,
+          position: 'top-center'
+        });
       }
     }
   };

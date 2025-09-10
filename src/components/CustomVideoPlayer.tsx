@@ -63,15 +63,8 @@ export function CustomVideoPlayer({
     const handlePause = () => setIsPlaying(false);
     const handleEnded = () => {
       setIsPlaying(false);
-      if (autoPlayNextEnabled) {
-        if (onEnded) {
-          onEnded();
-        } else {
-          toast.info('没有下一集了', {
-            duration: 2000,
-            position: 'top-center'
-          });
-        }
+      if (autoPlayNextEnabled && onEnded) {
+        onEnded();
       }
     };
     const handleError = (e: Event) => {
