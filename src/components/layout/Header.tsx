@@ -1,7 +1,7 @@
-import { SearchBar } from './SearchBar';
+import { SearchBar } from '@/components/navigation/SearchBar';
 import { Button } from '@/components/ui/button';
-import { ThemeToggle } from './ThemeToggle';
-import { GlassEffectToggle } from './GlassEffectToggle';
+import { ThemeToggle } from '@/components/common/ThemeToggle';
+import { GlassEffectToggle } from '@/components/common/GlassEffectToggle';
 import { useGlassEffect, getGlassClass } from '@/contexts/GlassEffectContext';
 import { Home, TrendingUp, Clock } from 'lucide-react';
 

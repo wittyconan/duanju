@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Header } from './Header';
-import { VideoCard } from './VideoCard';
-import { VideoGridSkeleton } from './VideoCardSkeleton';
-import { VideoDetailModal } from './VideoDetailModal';
-import { Footer } from './Footer';
-import { BackToTop } from './BackToTop';
+import { Header } from '@/components/layout/Header';
+import { VideoCard } from '@/components/video/VideoCard';
+import { VideoGridSkeleton } from '@/components/video/VideoCardSkeleton';
+import { VideoDetailModal } from '@/components/video/VideoDetailModal';
+import { Footer } from '@/components/footer/Footer';
+import { BackToTop } from '@/components/layout/BackToTop';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { apiService } from '@/services/api';
 import type { VideoItem } from '@/types';

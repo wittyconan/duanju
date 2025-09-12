@@ -2,15 +2,15 @@
 
 import React from 'react';
 import { FOOTER_CONFIG } from '@/config/footer';
-import { useFooterState } from './footer/useFooterState';
-import { AboutDialog } from './footer/AboutDialog';
-import { FaqDialog } from './footer/FaqDialog';
-import { ContactDialog } from './footer/ContactDialog';
-import { UserAgreementDialog } from './footer/UserAgreementDialog';
-import { PrivacyPolicyDialog } from './footer/PrivacyPolicyDialog';
-import { UserGuideDialog } from './footer/UserGuideDialog';
-import { FeedbackDialog } from './footer/FeedbackDialog';
-import { SupportDialog } from './footer/SupportDialog';
+import { useFooterState } from './useFooterState';
+import { AboutDialog } from './AboutDialog';
+import { FaqDialog } from './FaqDialog';
+import { ContactDialog } from './ContactDialog';
+import { UserAgreementDialog } from './UserAgreementDialog';
+import { PrivacyPolicyDialog } from './PrivacyPolicyDialog';
+import { UserGuideDialog } from './UserGuideDialog';
+import { FeedbackDialog } from './FeedbackDialog';
+import { SupportDialog } from './SupportDialog';
 
 export const Footer = React.memo(() => {
   const { state, openDialog, closeDialog } = useFooterState();

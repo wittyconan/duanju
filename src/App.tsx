@@ -1,10 +1,10 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { HomePage } from './components/HomePage';
-import { SearchPage } from './components/SearchPage';
-import { VideoPlayPage } from './components/VideoPlayPage';
+import { HomePage } from './components/pages/HomePage';
+import { SearchPage } from './components/pages/SearchPage';
+import { VideoPlayPage } from './components/pages/VideoPlayPage';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { GlassEffectProvider } from './contexts/GlassEffectContext';
-import ErrorBoundary from './components/ErrorBoundary';
+import ErrorBoundary from './components/common/ErrorBoundary';
 import { Toaster } from './components/ui/sonner';
 
 function App() {
