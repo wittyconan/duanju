@@ -52,16 +52,12 @@ export function useGlassEffect() {
 export function getGlassClass(baseClass: string, effectType: GlassEffectType): string {
   switch (effectType) {
     case 'liquid':
-      if (baseClass.includes('backdrop-blur-sm')) {
-        return baseClass.replace('backdrop-blur-sm', 'liquid-glass');
-      }
-      if (baseClass.includes('backdrop-blur-md')) {
-        return baseClass.replace('backdrop-blur-md', 'liquid-glass');
-      }
-      if (baseClass.includes('backdrop-blur')) {
-        return baseClass.replace(/backdrop-blur[-\w]*/, 'liquid-glass');
-      }
-      return baseClass + ' liquid-glass';
+      // 移除backdrop-blur相关类，但保留其他所有类
+      const cleanedBase = baseClass
+        .replace(/backdrop-blur[-\w]*\s?/g, '')
+        .replace(/bg-background\/\d+\s?/g, '')
+        .trim();
+      return cleanedBase + ' liquid-glass';
     case 'blur':
     default:
       return baseClass;
@@ -70,14 +66,24 @@ export function getGlassClass(baseClass: string, effectType: GlassEffectType): s
 
 export function getGlassButtonClass(baseClass: string, effectType: GlassEffectType): string {
   if (effectType === 'liquid') {
-    return baseClass.replace(/bg-white\/\d+|backdrop-blur[-\w]*/, '').trim() + ' liquid-glass-button';
+    // 只移除背景相关的类，保留其他类
+    const cleanedBase = baseClass
+      .replace(/bg-white\/\d+\s?/g, '')
+      .replace(/backdrop-blur[-\w]*\s?/g, '')
+      .trim();
+    return cleanedBase + ' liquid-glass-button';
   }
   return baseClass;
 }
 
 export function getGlassOverlayClass(baseClass: string, effectType: GlassEffectType): string {
   if (effectType === 'liquid') {
-    return baseClass.replace(/bg-white\/\d+|backdrop-blur[-\w]*/, '').trim() + ' liquid-glass-overlay';
+    // 只移除背景相关的类，保留其他类
+    const cleanedBase = baseClass
+      .replace(/bg-white\/\d+\s?/g, '')
+      .replace(/backdrop-blur[-\w]*\s?/g, '')
+      .trim();
+    return cleanedBase + ' liquid-glass-overlay';
   }
   return baseClass;
 }
