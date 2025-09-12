@@ -25,14 +25,14 @@ export function EpisodeList({ episodes, currentEpisode, onEpisodeChange, loading
           {episodes.length > 0 ? `共${episodes.length}集` : '加载中...'}
         </p>
       </CardHeader>
-      <CardContent className="pr-2">
+      <CardContent className="px-6 pr-2">
         <ScrollArea className="h-150 pr-4">
           {episodes.length === 0 ? (
             <div className="flex items-center justify-center h-32 text-muted-foreground">
               加载集数中...
             </div>
           ) : (
-            <div className="grid grid-cols-4 lg:grid-cols-3 gap-3 pr-2">
+            <div className="grid grid-cols-4 lg:grid-cols-3 gap-3">
               {episodes.map((episode) => (
                 <Button
                   key={episode}
