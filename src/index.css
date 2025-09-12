@@ -125,43 +125,31 @@ body {
   }
 }
 
-/* Glass Effect Styles */
+/* Glass Effect Variables */
 :root {
   --glass-blur: 12px;
-  --glass-opacity: 0.1;
-  --glass-border: rgba(255, 255, 255, 0.2);
-  --glass-bg: rgba(255, 255, 255, 0.08);
-  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  --text-shadow-light: 0 1px 2px rgba(0, 0, 0, 0.2); /* 亮色模式文本阴影 */
+  --glass-bg-light: rgba(255, 255, 255, 0.18);
+  --glass-bg-light-hover: rgba(255, 255, 255, 0.32);
+  --glass-border-light: rgba(255, 255, 255, 0.35);
+  --glass-shadow-light: 0 8px 32px rgba(0, 0, 0, 0.1);
+  
+  --glass-bg-dark: rgba(255, 255, 255, 0.12);
+  --glass-bg-dark-hover: rgba(255, 255, 255, 0.18);
+  --glass-border-dark: rgba(255, 255, 255, 0.25);
+  --glass-shadow-dark: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
-.dark {
-  --glass-bg: rgba(255, 255, 255, 0.05);
-  --glass-border: rgba(255, 255, 255, 0.15);
-  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  --text-shadow-dark: 0 1px 3px rgba(0, 0, 0, 0.4); /* 暗色模式文本阴影 */
-}
-
-/* Liquid Glass Effect Classes - Enhanced for production stability and better readability */
+/* Liquid Glass Effect Classes */
 .liquid-glass {
-  background: linear-gradient(135deg,
-    rgba(255, 255, 255, 0.5) 0%,
-    rgba(255, 255, 255, 0.4) 50%,
-    rgba(255, 255, 255, 0.35) 100%) !important;
-  /* Stronger fallback for production environments with better readability */
-  background-color: rgba(255, 255, 255, 0.5) !important;
-  /* Force backdrop-filter with maximum compatibility */
-  -webkit-backdrop-filter: blur(12px) saturate(1.5) !important;
-  backdrop-filter: blur(12px) saturate(1.5) !important;
-  border: 1px solid rgba(255, 255, 255, 0.5) !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
-}
-
-/* Only adjust background opacity if backdrop-filter is supported */
-@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
-  .liquid-glass {
-    background-color: rgba(255, 255, 255, 0.4) !important;
-  }
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.25) 0%,
+    rgba(255, 255, 255, 0.18) 50%,
+    rgba(255, 255, 255, 0.15) 100%) !important;
+  background-color: var(--glass-bg-light) !important;
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.5) !important;
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.5) !important;
+  border: 1px solid var(--glass-border-light) !important;
+  box-shadow: var(--glass-shadow-light), inset 0 1px 0 var(--glass-border-light) !important;
 }
 
 .dark .liquid-glass {
@@ -169,94 +157,70 @@ body {
     rgba(255, 255, 255, 0.15) 0%,
     rgba(255, 255, 255, 0.10) 50%,
     rgba(255, 255, 255, 0.08) 100%) !important;
-  background-color: rgba(255, 255, 255, 0.15) !important;
-  border: 1px solid rgba(255, 255, 255, 0.25) !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
-}
-
-@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
-  .dark .liquid-glass {
-    background-color: rgba(255, 255, 255, 0.12) !important;
-  }
+  background-color: var(--glass-bg-dark) !important;
+  border: 1px solid var(--glass-border-dark) !important;
+  box-shadow: var(--glass-shadow-dark), inset 0 1px 0 var(--glass-border-dark) !important;
 }
 
 .liquid-glass-button {
   background: linear-gradient(135deg,
-    rgba(255, 255, 255, 0.25) 0%,
-    rgba(255, 255, 255, 0.15) 100%) !important;
-  background-color: rgba(255, 255, 255, 0.3) !important;
+    rgba(255, 255, 255, 0.35) 0%,
+    rgba(255, 255, 255, 0.25) 100%) !important;
+  background-color: var(--glass-bg-light-hover) !important;
   -webkit-backdrop-filter: blur(8px) saturate(1.8) !important;
   backdrop-filter: blur(8px) saturate(1.8) !important;
-  border: 1px solid rgba(255, 255, 255, 0.35) !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1), 
-              inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+  border: 2px solid var(--glass-border-light) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15), 
+              inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  color: #000000 !important;
 }
 
-@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
-  .liquid-glass-button {
-    background-color: rgba(255, 255, 255, 0.22) !important;
-  }
+.liquid-glass-button svg {
+  color: #000000 !important;
+  font-weight: bold !important;
+  stroke-width: 2.5px !important;
 }
 
 .liquid-glass-button:hover {
   background: linear-gradient(135deg,
-    rgba(255, 255, 255, 0.35) 0%,
-    rgba(255, 255, 255, 0.25) 100%) !important;
-  background-color: rgba(255, 255, 255, 0.4) !important;
+    rgba(255, 255, 255, 0.45) 0%,
+    rgba(255, 255, 255, 0.35) 100%) !important;
+  background-color: rgba(255, 255, 255, 0.5) !important;
   transform: translateY(-1px) !important;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15),
-              inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
-}
-
-@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
-  .liquid-glass-button:hover {
-    background-color: rgba(255, 255, 255, 0.32) !important;
-  }
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2) !important;
 }
 
 .dark .liquid-glass-button {
   background: linear-gradient(135deg,
     rgba(255, 255, 255, 0.15) 0%,
     rgba(255, 255, 255, 0.08) 100%) !important;
-  background-color: rgba(255, 255, 255, 0.18) !important;
-  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  background-color: var(--glass-bg-dark) !important;
+  border: 2px solid var(--glass-border-dark) !important;
+  color: white !important;
 }
 
-@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
-  .dark .liquid-glass-button {
-    background-color: rgba(255, 255, 255, 0.14) !important;
-  }
+.dark .liquid-glass-button svg {
+  color: white !important;
 }
 
 .dark .liquid-glass-button:hover {
   background: linear-gradient(135deg,
     rgba(255, 255, 255, 0.2) 0%,
     rgba(255, 255, 255, 0.12) 100%) !important;
-  background-color: rgba(255, 255, 255, 0.25) !important;
-}
-
-@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
-  .dark .liquid-glass-button:hover {
-    background-color: rgba(255, 255, 255, 0.18) !important;
-  }
+  background-color: var(--glass-bg-dark-hover) !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3) !important;
 }
 
 .liquid-glass-overlay {
   background: linear-gradient(135deg,
-    rgba(255, 255, 255, 0.95) 0%,
-    rgba(255, 255, 255, 0.92) 50%,
-    rgba(255, 255, 255, 0.9) 100%) !important;
-  background-color: rgba(255, 255, 255, 0.95) !important;
-  -webkit-backdrop-filter: blur(8px) saturate(1.1) !important;
-  backdrop-filter: blur(8px) saturate(1.1) !important;
-  border: 1px solid rgba(255, 255, 255, 0.9) !important;
-}
-
-@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
-  .liquid-glass-overlay {
-    background-color: rgba(255, 255, 255, 0.92) !important;
-  }
+    rgba(255, 255, 255, 0.45) 0%,
+    rgba(255, 255, 255, 0.35) 50%,
+    rgba(255, 255, 255, 0.30) 100%) !important;
+  background-color: rgba(255, 255, 255, 0.40) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(1.8) !important;
+  backdrop-filter: blur(16px) saturate(1.8) !important;
+  border: 1px solid rgba(255, 255, 255, 0.5) !important;
 }
 
 .dark .liquid-glass-overlay {
@@ -264,13 +228,7 @@ body {
     rgba(255, 255, 255, 0.18) 0%,
     rgba(255, 255, 255, 0.12) 50%,
     rgba(255, 255, 255, 0.08) 100%) !important;
-  background-color: rgba(255, 255, 255, 0.22) !important;
-}
-
-@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
-  .dark .liquid-glass-overlay {
-    background-color: rgba(255, 255, 255, 0.18) !important;
-  }
+  background-color: rgba(255, 255, 255, 0.18) !important;
 }
 
 /* Web fullscreen styles */
@@ -284,12 +242,11 @@ body {
   background: black !important;
 }
 
-/* Enhanced text contrast for liquid glass effects in LIGHT mode */
+/* Text Contrast & Readability Enhancements */
 .liquid-glass-overlay .text-muted-foreground,
 .liquid-glass .text-muted-foreground {
-  color: hsl(220 60% 15%) !important;
+  color: hsl(220 40% 25%) !important;
   opacity: 1 !important;
-  text-shadow: var(--text-shadow-light) !important;
 }
 
 .liquid-glass-overlay p.text-sm,
@@ -298,42 +255,15 @@ body {
 .liquid-glass p.text-sm,
 .liquid-glass div.text-sm,
 .liquid-glass span.text-sm {
-  color: hsl(220 80% 10%) !important;
-  font-weight: 700 !important;
-  text-shadow: var(--text-shadow-light) !important;
+  color: hsl(220 40% 15%) !important;
+  font-weight: 600 !important;
 }
 
-/* 增强亮色模式下所有文本的可读性 */
-.liquid-glass-overlay p,
-.liquid-glass-overlay div,
-.liquid-glass-overlay span,
-.liquid-glass p,
-.liquid-glass div,
-.liquid-glass span {
-  color: hsl(220 80% 10%) !important;
-  text-shadow: var(--text-shadow-light) !important;
-}
-
-/* 特别增强剧集信息和集数显示的可读性 */
-.liquid-glass-overlay h1,
-.liquid-glass-overlay h2,
-.liquid-glass-overlay h3,
-.liquid-glass-overlay h4,
-.liquid-glass h1,
-.liquid-glass h2,
-.liquid-glass h3,
-.liquid-glass h4 {
-  color: hsl(220 80% 5%) !important;
-  font-weight: 700 !important;
-  text-shadow: 0 1px 3px rgba(255, 255, 255, 0.7), var(--text-shadow-light) !important;
-}
-
-/* Dark mode - keep original approach but add text shadow */
+/* Dark mode - keep original approach */
 .dark .liquid-glass-overlay .text-muted-foreground,
 .dark .liquid-glass .text-muted-foreground {
-  color: hsl(0 0% 95%) !important;
-  opacity: 1 !important;
-  text-shadow: var(--text-shadow-dark) !important;
+  color: hsl(0 0% 90%) !important;
+  opacity: 0.9 !important;
 }
 
 .dark .liquid-glass-overlay p.text-sm,
@@ -342,55 +272,25 @@ body {
 .dark .liquid-glass p.text-sm,
 .dark .liquid-glass div.text-sm,
 .dark .liquid-glass span.text-sm {
-  color: hsl(0 0% 100%) !important;
-  font-weight: 600 !important;
-  text-shadow: var(--text-shadow-dark) !important;
-}
-
-/* 增强暗色模式下所有文本的可读性 */
-.dark .liquid-glass-overlay p,
-.dark .liquid-glass-overlay div,
-.dark .liquid-glass-overlay span,
-.dark .liquid-glass p,
-.dark .liquid-glass div,
-.dark .liquid-glass span {
-  color: hsl(0 0% 100%) !important;
-  text-shadow: var(--text-shadow-dark) !important;
-}
-
-/* 特别增强暗色模式下剧集信息和集数显示的可读性 */
-.dark .liquid-glass-overlay h1,
-.dark .liquid-glass-overlay h2,
-.dark .liquid-glass-overlay h3,
-.dark .liquid-glass-overlay h4,
-.dark .liquid-glass h1,
-.dark .liquid-glass h2,
-.dark .liquid-glass h3,
-.dark .liquid-glass h4 {
-  color: hsl(0 0% 100%) !important;
-  font-weight: 700 !important;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7), var(--text-shadow-dark) !important;
+  color: hsl(0 0% 95%) !important;
+  font-weight: 500 !important;
 }
 
 /* Override for badges specifically - higher specificity and stronger contrast */
 .dark .liquid-glass-overlay span[data-slot="badge"],
 .dark .liquid-glass span[data-slot="badge"] {
   color: white !important;
-  background-color: rgba(0, 0, 0, 0.8) !important;
-  border: 1px solid rgba(255, 255, 255, 0.4) !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+  background-color: rgba(0, 0, 0, 0.7) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
 }
 
 /* Light mode badge contrast in liquid glass */
 .liquid-glass-overlay span[data-slot="badge"],
 .liquid-glass span[data-slot="badge"] {
-  color: white !important;
-  background-color: rgba(0, 0, 0, 0.85) !important;
-  border: 1px solid rgba(255, 255, 255, 0.5) !important;
-  font-weight: 800 !important;
-  padding: 2px 8px !important;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
-  text-shadow: none !important;
+  color: #000000 !important;
+  background-color: rgba(255, 255, 255, 0.8) !important;
+  border: 1px solid rgba(0, 0, 0, 0.2) !important;
+  font-weight: 600 !important;
 }
 
 /* Ensure buttons maintain proper text visibility while preserving hover effects */
@@ -412,9 +312,6 @@ body {
 .liquid-glass [role="dialog"] button {
   background-color: hsl(var(--primary)) !important;
   color: hsl(var(--primary-foreground)) !important;
-  font-weight: 700 !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
 }
 
 /* Preserve hover effects but ensure text stays visible */
@@ -432,26 +329,18 @@ body {
 .liquid-glass [class*="badge"],
 .liquid-glass-overlay .badge,
 .liquid-glass .badge {
-  background-color: rgba(0, 0, 0, 0.85) !important;
-  color: white !important;
-  border: 1px solid rgba(255, 255, 255, 0.5) !important;
-  font-weight: 800 !important;
-  padding: 2px 8px !important;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
-  text-shadow: none !important;
+  background-color: hsl(var(--secondary)) !important;
+  color: hsl(var(--secondary-foreground)) !important;
+  border: 1px solid hsl(var(--border)) !important;
 }
 
 .dark .liquid-glass-overlay [class*="badge"],
 .dark .liquid-glass [class*="badge"],
 .dark .liquid-glass-overlay .badge,
 .dark .liquid-glass .badge {
-  background-color: rgba(0, 0, 0, 0.9) !important;
+  background-color: hsl(0 0% 20%) !important;
   color: white !important;
-  border: 1px solid rgba(255, 255, 255, 0.5) !important;
-  font-weight: 800 !important;
-  padding: 2px 8px !important;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
-  text-shadow: none !important;
+  border: 1px solid hsl(0 0% 40%) !important;
 }
 
 /* Enhanced button hover effects for light mode */
@@ -459,9 +348,8 @@ body {
 .liquid-glass [role="dialog"] button:hover {
   background-color: hsl(var(--primary)) !important;
   transform: translateY(-1px) !important;
-  box-shadow: 0 4px 12px hsla(var(--primary), 0.5) !important;
+  box-shadow: 0 4px 12px hsla(var(--primary), 0.3) !important;
   transition: all 0.2s ease-out !important;
-  filter: brightness(1.1) !important;
 }
 
 /* Dark mode button hover - keep original effects */
@@ -489,23 +377,3 @@ body {
   color: white !important;
 }
 
-/* Fix Back to Top button visibility in liquid glass mode - override default liquid-glass-button */
-.liquid-glass-button {
-  background: linear-gradient(135deg,
-    rgba(255, 255, 255, 0.35) 0%,
-    rgba(255, 255, 255, 0.25) 100%) !important;
-  background-color: rgba(255, 255, 255, 0.4) !important;
-  -webkit-backdrop-filter: blur(8px) saturate(1.8) !important;
-  backdrop-filter: blur(8px) saturate(1.8) !important;
-  border: 2px solid rgba(255, 255, 255, 0.5) !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15), 
-              inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  color: #000000 !important;
-}
-
-.liquid-glass-button svg {
-  color: #000000 !important;
-  font-weight: bold !important;
-  stroke-width: 2.5px !important;
-}
