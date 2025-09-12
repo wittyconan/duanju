@@ -3,7 +3,6 @@ import type { VideoItem } from '@/types';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Play, Calendar, MapPin, User, Users, FileText, Loader2, AlertCircle } from 'lucide-react';
 import { apiService } from '@/services/api';
