@@ -17,15 +17,15 @@ export default defineConfig({
     // 生成 source map（可选）
     sourcemap: false,
     // 分包策略
-    rollupOptions: {
-      treeshake: true,
-      output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-          ui: ['lucide-react', '@radix-ui/react-dialog', '@radix-ui/react-scroll-area'],
-        },
-      },
-    },
+    // rollupOptions: {
+    //   treeshake: true,
+    //   output: {
+    //     manualChunks: {
+    //       vendor: ['react', 'react-dom'],
+    //       ui: ['lucide-react', '@radix-ui/react-dialog', '@radix-ui/react-scroll-area'],
+    //     },
+    //   },
+    // },
   },
   esbuild: {
     // 移除console和debugger

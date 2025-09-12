@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Play, Calendar, MapPin, User, Users, FileText, Loader2, AlertCircle } from 'lucide-react';
+import { useGlassEffect, getGlassOverlayClass } from '@/contexts/GlassEffectContext';
 import { apiService } from '@/services/api';
 
 interface VideoDetailModalProps {
@@ -22,6 +23,7 @@ export function VideoDetailModal({ video, isOpen, onClose, onPlay }: VideoDetail
   const [, setAdditionalInfo] = useState<{ description?: string } | null>(null);
   const [headerHeight, setHeaderHeight] = useState(320);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const { effectType } = useGlassEffect();
 
   const loadVideoDetails = useCallback(async () => {
     if (!video) return;
@@ -119,7 +121,7 @@ export function VideoDetailModal({ video, isOpen, onClose, onPlay }: VideoDetail
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] p-0 overflow-hidden flex flex-col">
+      <DialogContent className={getGlassOverlayClass("max-w-4xl max-h-[90vh] p-0 overflow-hidden flex flex-col bg-white/98 backdrop-blur-md dark:bg-black/98", effectType)}>
         <DialogDescription className="sr-only">
           视频详情信息，包括剧情简介、演职员信息和播放选项
         </DialogDescription>
@@ -242,7 +244,7 @@ export function VideoDetailModal({ video, isOpen, onClose, onPlay }: VideoDetail
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-medium">开始播放</h3>
                 {totalEpisodes > 1 && (
-                  <Badge variant="secondary">
+                  <Badge variant="secondary" className="text-white dark:text-white">
                     共{totalEpisodes}集
                   </Badge>
                 )}
@@ -254,7 +256,11 @@ export function VideoDetailModal({ video, isOpen, onClose, onPlay }: VideoDetail
                   onPlay(currentVideo, 1);
                   onClose();
                 }}
-                className="w-full"
+                className="w-full border-1 border-white/90 shadow-lg"
+                style={{
+                  border: '1px solid rgba(255, 255, 255, 0.7)',
+                  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
+                }}
                 size="lg"
               >
                 <Play className="h-4 w-4 mr-2" />

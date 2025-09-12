@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowUp } from 'lucide-react';
+import { useGlassEffect, getGlassButtonClass } from '@/contexts/GlassEffectContext';
 
 export function BackToTop() {
   const [isVisible, setIsVisible] = useState(false);
+  const { effectType } = useGlassEffect();
 
   useEffect(() => {
     const toggleVisibility = () => {
@@ -33,7 +35,7 @@ export function BackToTop() {
     <Button
       onClick={scrollToTop}
       size="icon"
-      className="fixed bottom-8 right-8 z-50 h-12 w-12 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 animate-in fade-in-0 slide-in-from-bottom-4"
+      className={getGlassButtonClass("fixed bottom-8 right-8 z-50 h-12 w-12 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 animate-in fade-in-0 slide-in-from-bottom-4", effectType)}
       title="回到顶部"
     >
       <ArrowUp className="h-5 w-5" />

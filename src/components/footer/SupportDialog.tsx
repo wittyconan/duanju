@@ -1,12 +1,15 @@
 import { Wrench } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { useGlassEffect, getGlassOverlayClass } from '@/contexts/GlassEffectContext';
 import { FOOTER_CONFIG } from '@/config/footer';
 import type { DialogProps } from './types';
 
 export function SupportDialog({ open, onOpenChange }: DialogProps) {
+  const { effectType } = useGlassEffect();
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl">
+      <DialogContent className={getGlassOverlayClass("max-w-3xl", effectType)}>
         <DialogHeader className="text-center pb-4">
           <div className="mx-auto mb-4 w-16 h-16 bg-teal-100 dark:bg-teal-900/20 rounded-full flex items-center justify-center">
             <Wrench className="w-8 h-8 text-teal-600" />

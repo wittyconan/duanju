@@ -1,12 +1,15 @@
 import { Phone, MessageCircle, Users } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { useGlassEffect, getGlassOverlayClass } from '@/contexts/GlassEffectContext';
 import { FOOTER_CONFIG } from '@/config/footer';
 import type { ContactDialogProps } from './types';
 
 export function ContactDialog({ open, onOpenChange }: ContactDialogProps) {
+  const { effectType } = useGlassEffect();
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl">
+      <DialogContent className={getGlassOverlayClass("max-w-3xl", effectType)}>
         <DialogHeader className="text-center pb-4">
           <div className="mx-auto mb-4 w-16 h-16 bg-orange-100 dark:bg-orange-900/20 rounded-full flex items-center justify-center">
             <Phone className="w-8 h-8 text-orange-600" />

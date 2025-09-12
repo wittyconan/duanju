@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glass Effect Debug</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: system-ui, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .debug-info {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .glass-test {
+            width: 300px;
+            height: 150px;
+            margin: 20px;
+            padding: 20px;
+            border-radius: 12px;
+            color: white;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        
+        .test1 {
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.15) 0%,
+                rgba(255, 255, 255, 0.08) 50%,
+                rgba(255, 255, 255, 0.05) 100%);
+            background-color: rgba(255, 255, 255, 0.15);
+            -webkit-backdrop-filter: blur(12px) saturate(1.5);
+            backdrop-filter: blur(12px) saturate(1.5);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+        }
+        
+        @supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+            .test1 {
+                background-color: rgba(255, 255, 255, 0.08);
+            }
+        }
+        
+        .test2 {
+            background-color: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+        }
+    </style>
+</head>
+<body>
+    <div class="debug-info">
+        <h2>Glass Effect Debug Info</h2>
+        <p><strong>User Agent:</strong> <span id="userAgent"></span></p>
+        <p><strong>Supports backdrop-filter:</strong> <span id="backdropSupport"></span></p>
+        <p><strong>Window location:</strong> <span id="location"></span></p>
+        <p><strong>CSS.supports backdrop-filter:</strong> <span id="cssSupport"></span></p>
+    </div>
+    
+    <div class="glass-test test1">
+        Glass Effect with backdrop-filter
+        <br>应该看起来像左侧dev效果
+    </div>
+    
+    <div class="glass-test test2">
+        Fallback without backdrop-filter
+        <br>应该看起来更不透明
+    </div>
+    
+    <script>
+        document.getElementById('userAgent').textContent = navigator.userAgent;
+        document.getElementById('location').textContent = window.location.href;
+        
+        // Check CSS.supports
+        let cssSupport = false;
+        if (typeof CSS !== 'undefined' && CSS.supports) {
+            cssSupport = CSS.supports('backdrop-filter', 'blur(1px)') || 
+                        CSS.supports('-webkit-backdrop-filter', 'blur(1px)');
+        }
+        document.getElementById('cssSupport').textContent = cssSupport ? 'Yes' : 'No';
+        
+        // Check computed style
+        const testDiv = document.createElement('div');
+        testDiv.style.backdropFilter = 'blur(1px)';
+        document.body.appendChild(testDiv);
+        const computedStyle = getComputedStyle(testDiv);
+        const hasBackdropFilter = computedStyle.backdropFilter !== '' || 
+                                 computedStyle.webkitBackdropFilter !== '';
+        document.getElementById('backdropSupport').textContent = hasBackdropFilter ? 'Yes' : 'No';
+        document.body.removeChild(testDiv);
+    </script>
+</body>
+</html>

@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useGlassEffect, getGlassClass, getGlassButtonClass } from '@/contexts/GlassEffectContext';
 
 interface EpisodeListProps {
   episodes: number[];
@@ -10,12 +11,14 @@ interface EpisodeListProps {
 }
 
 export function EpisodeList({ episodes, currentEpisode, onEpisodeChange, loading }: EpisodeListProps) {
+  const { effectType } = useGlassEffect();
+
   if (episodes.length === 0 && !loading) {
     return null;
   }
 
   return (
-    <Card>
+    <Card className={getGlassClass("bg-background/80 backdrop-blur-sm border", effectType)}>
       <CardHeader>
         <CardTitle className="text-base">选集播放</CardTitle>
         <p className="text-sm text-muted-foreground">
@@ -36,7 +39,11 @@ export function EpisodeList({ episodes, currentEpisode, onEpisodeChange, loading
                   variant={episode === currentEpisode ? "default" : "outline"}
                   size="sm"
                   onClick={() => onEpisodeChange(episode)}
-                  className="h-10"
+                  className={
+                    episode === currentEpisode 
+                      ? "h-10 bg-primary text-primary-foreground font-bold border-2 border-primary shadow-lg" 
+                      : getGlassButtonClass("h-10 bg-background/50 backdrop-blur-sm hover:bg-background/70", effectType)
+                  }
                 >
                   {episode}
                 </Button>

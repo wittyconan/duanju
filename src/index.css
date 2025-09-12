@@ -140,74 +140,135 @@ body {
   --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
-/* Liquid Glass Effect Classes */
+/* Liquid Glass Effect Classes - Enhanced for production stability and better readability */
 .liquid-glass {
   background: linear-gradient(135deg, 
-    rgba(255, 255, 255, 0.15) 0%,
-    rgba(255, 255, 255, 0.08) 50%,
-    rgba(255, 255, 255, 0.05) 100%);
-  backdrop-filter: blur(var(--glass-blur)) saturate(1.5);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.5);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    rgba(255, 255, 255, 0.25) 0%,
+    rgba(255, 255, 255, 0.18) 50%,
+    rgba(255, 255, 255, 0.15) 100%) !important;
+  /* Stronger fallback for production environments with better readability */
+  background-color: rgba(255, 255, 255, 0.25) !important;
+  /* Force backdrop-filter with maximum compatibility */
+  -webkit-backdrop-filter: blur(12px) saturate(1.5) !important;
+  backdrop-filter: blur(12px) saturate(1.5) !important;
+  border: 1px solid rgba(255, 255, 255, 0.35) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.35) !important;
+}
+
+/* Only adjust background opacity if backdrop-filter is supported */
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+  .liquid-glass {
+    background-color: rgba(255, 255, 255, 0.18) !important;
+  }
 }
 
 .dark .liquid-glass {
   background: linear-gradient(135deg,
-    rgba(255, 255, 255, 0.1) 0%,
-    rgba(255, 255, 255, 0.05) 50%,
-    rgba(255, 255, 255, 0.02) 100%);
+    rgba(255, 255, 255, 0.15) 0%,
+    rgba(255, 255, 255, 0.10) 50%,
+    rgba(255, 255, 255, 0.08) 100%) !important;
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
+}
+
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+  .dark .liquid-glass {
+    background-color: rgba(255, 255, 255, 0.12) !important;
+  }
 }
 
 .liquid-glass-button {
   background: linear-gradient(135deg,
     rgba(255, 255, 255, 0.25) 0%,
-    rgba(255, 255, 255, 0.15) 100%);
-  backdrop-filter: blur(8px) saturate(1.8);
-  -webkit-backdrop-filter: blur(8px) saturate(1.8);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+    rgba(255, 255, 255, 0.15) 100%) !important;
+  background-color: rgba(255, 255, 255, 0.3) !important;
+  -webkit-backdrop-filter: blur(8px) saturate(1.8) !important;
+  backdrop-filter: blur(8px) saturate(1.8) !important;
+  border: 1px solid rgba(255, 255, 255, 0.35) !important;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1), 
-              inset 0 1px 0 rgba(255, 255, 255, 0.4);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+              inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+  .liquid-glass-button {
+    background-color: rgba(255, 255, 255, 0.22) !important;
+  }
 }
 
 .liquid-glass-button:hover {
   background: linear-gradient(135deg,
     rgba(255, 255, 255, 0.35) 0%,
-    rgba(255, 255, 255, 0.25) 100%);
-  transform: translateY(-1px);
+    rgba(255, 255, 255, 0.25) 100%) !important;
+  background-color: rgba(255, 255, 255, 0.4) !important;
+  transform: translateY(-1px) !important;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15),
-              inset 0 1px 0 rgba(255, 255, 255, 0.5);
+              inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
+}
+
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+  .liquid-glass-button:hover {
+    background-color: rgba(255, 255, 255, 0.32) !important;
+  }
 }
 
 .dark .liquid-glass-button {
   background: linear-gradient(135deg,
     rgba(255, 255, 255, 0.15) 0%,
-    rgba(255, 255, 255, 0.08) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+    rgba(255, 255, 255, 0.08) 100%) !important;
+  background-color: rgba(255, 255, 255, 0.18) !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+}
+
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+  .dark .liquid-glass-button {
+    background-color: rgba(255, 255, 255, 0.14) !important;
+  }
 }
 
 .dark .liquid-glass-button:hover {
   background: linear-gradient(135deg,
     rgba(255, 255, 255, 0.2) 0%,
-    rgba(255, 255, 255, 0.12) 100%);
+    rgba(255, 255, 255, 0.12) 100%) !important;
+  background-color: rgba(255, 255, 255, 0.25) !important;
+}
+
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+  .dark .liquid-glass-button:hover {
+    background-color: rgba(255, 255, 255, 0.18) !important;
+  }
 }
 
 .liquid-glass-overlay {
   background: linear-gradient(135deg,
-    rgba(255, 255, 255, 0.2) 0%,
-    rgba(255, 255, 255, 0.1) 50%,
-    rgba(255, 255, 255, 0.05) 100%);
-  backdrop-filter: blur(16px) saturate(1.8);
-  -webkit-backdrop-filter: blur(16px) saturate(1.8);
-  border: 1px solid rgba(255, 255, 255, 0.25);
+    rgba(255, 255, 255, 0.45) 0%,
+    rgba(255, 255, 255, 0.35) 50%,
+    rgba(255, 255, 255, 0.30) 100%) !important;
+  background-color: rgba(255, 255, 255, 0.50) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(1.8) !important;
+  backdrop-filter: blur(16px) saturate(1.8) !important;
+  border: 1px solid rgba(255, 255, 255, 0.5) !important;
+}
+
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+  .liquid-glass-overlay {
+    background-color: rgba(255, 255, 255, 0.40) !important;
+  }
 }
 
 .dark .liquid-glass-overlay {
   background: linear-gradient(135deg,
-    rgba(255, 255, 255, 0.12) 0%,
-    rgba(255, 255, 255, 0.06) 50%,
-    rgba(255, 255, 255, 0.03) 100%);
+    rgba(255, 255, 255, 0.18) 0%,
+    rgba(255, 255, 255, 0.12) 50%,
+    rgba(255, 255, 255, 0.08) 100%) !important;
+  background-color: rgba(255, 255, 255, 0.22) !important;
+}
+
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+  .dark .liquid-glass-overlay {
+    background-color: rgba(255, 255, 255, 0.18) !important;
+  }
 }
 
 /* Web fullscreen styles */
@@ -219,4 +280,149 @@ body {
   height: 100vh !important;
   z-index: 9999 !important;
   background: black !important;
+}
+
+/* Enhanced text contrast for liquid glass effects in LIGHT mode */
+.liquid-glass-overlay .text-muted-foreground,
+.liquid-glass .text-muted-foreground {
+  color: hsl(220 40% 25%) !important;
+  opacity: 1 !important;
+}
+
+.liquid-glass-overlay p.text-sm,
+.liquid-glass-overlay div.text-sm,
+.liquid-glass-overlay span.text-sm,
+.liquid-glass p.text-sm,
+.liquid-glass div.text-sm,
+.liquid-glass span.text-sm {
+  color: hsl(220 40% 15%) !important;
+  font-weight: 600 !important;
+}
+
+/* Dark mode - keep original approach */
+.dark .liquid-glass-overlay .text-muted-foreground,
+.dark .liquid-glass .text-muted-foreground {
+  color: hsl(0 0% 90%) !important;
+  opacity: 0.9 !important;
+}
+
+.dark .liquid-glass-overlay p.text-sm,
+.dark .liquid-glass-overlay div.text-sm,
+.dark .liquid-glass-overlay span.text-sm,
+.dark .liquid-glass p.text-sm,
+.dark .liquid-glass div.text-sm,
+.dark .liquid-glass span.text-sm {
+  color: hsl(0 0% 95%) !important;
+  font-weight: 500 !important;
+}
+
+/* Override for badges specifically - higher specificity */
+.dark .liquid-glass-overlay span[data-slot="badge"],
+.dark .liquid-glass span[data-slot="badge"] {
+  color: white !important;
+}
+
+/* Ensure buttons maintain proper text visibility while preserving hover effects */
+.liquid-glass-overlay button,
+.liquid-glass button {
+  background-color: hsl(var(--primary)) !important;
+  color: hsl(var(--primary-foreground)) !important;
+}
+
+.liquid-glass-overlay button *,
+.liquid-glass button *,
+.liquid-glass-overlay button svg,
+.liquid-glass button svg {
+  color: hsl(var(--primary-foreground)) !important;
+}
+
+/* Specifically target the play button in dialogs */
+.liquid-glass-overlay [role="dialog"] button,
+.liquid-glass [role="dialog"] button {
+  background-color: hsl(var(--primary)) !important;
+  color: hsl(var(--primary-foreground)) !important;
+}
+
+/* Preserve hover effects but ensure text stays visible */
+.liquid-glass-overlay button:hover *,
+.liquid-glass button:hover *,
+.liquid-glass-overlay button:hover svg,
+.liquid-glass button:hover svg,
+.liquid-glass-overlay [role="dialog"] button:hover *,
+.liquid-glass [role="dialog"] button:hover svg {
+  color: hsl(var(--primary-foreground)) !important;
+}
+
+/* Fix badge visibility in liquid glass mode */
+.liquid-glass-overlay [class*="badge"],
+.liquid-glass [class*="badge"],
+.liquid-glass-overlay .badge,
+.liquid-glass .badge {
+  background-color: hsl(var(--secondary)) !important;
+  color: hsl(var(--secondary-foreground)) !important;
+  border: 1px solid hsl(var(--border)) !important;
+}
+
+.dark .liquid-glass-overlay [class*="badge"],
+.dark .liquid-glass [class*="badge"],
+.dark .liquid-glass-overlay .badge,
+.dark .liquid-glass .badge {
+  background-color: hsl(0 0% 20%) !important;
+  color: white !important;
+  border: 1px solid hsl(0 0% 40%) !important;
+}
+
+/* Enhanced button hover effects for light mode */
+.liquid-glass-overlay button:hover,
+.liquid-glass [role="dialog"] button:hover {
+  background-color: hsl(var(--primary)) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px hsla(var(--primary), 0.3) !important;
+  transition: all 0.2s ease-out !important;
+}
+
+/* Dark mode button hover - keep original effects */
+.dark .liquid-glass-overlay button:hover,
+.dark .liquid-glass [role="dialog"] button:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+  transition: all 0.2s ease-out !important;
+}
+
+/* Ensure button text is white in dark mode */
+.dark .liquid-glass-overlay button,
+.dark .liquid-glass button,
+.dark .liquid-glass-overlay [role="dialog"] button,
+.dark .liquid-glass [role="dialog"] button {
+  color: white !important;
+}
+
+.dark .liquid-glass-overlay button *,
+.dark .liquid-glass button *,
+.dark .liquid-glass-overlay button svg,
+.dark .liquid-glass button svg,
+.dark .liquid-glass-overlay [role="dialog"] button *,
+.dark .liquid-glass [role="dialog"] button svg {
+  color: white !important;
+}
+
+/* Fix Back to Top button visibility in liquid glass mode - override default liquid-glass-button */
+.liquid-glass-button {
+  background: linear-gradient(135deg,
+    rgba(255, 255, 255, 0.35) 0%,
+    rgba(255, 255, 255, 0.25) 100%) !important;
+  background-color: rgba(255, 255, 255, 0.4) !important;
+  -webkit-backdrop-filter: blur(8px) saturate(1.8) !important;
+  backdrop-filter: blur(8px) saturate(1.8) !important;
+  border: 2px solid rgba(255, 255, 255, 0.5) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15), 
+              inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  color: #000000 !important;
+}
+
+.liquid-glass-button svg {
+  color: #000000 !important;
+  font-weight: bold !important;
+  stroke-width: 2.5px !important;
 }

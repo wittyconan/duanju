@@ -2,10 +2,12 @@ import { useState } from 'react';
 import { MessageCircle, Copy, Check } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { useGlassEffect, getGlassOverlayClass } from '@/contexts/GlassEffectContext';
 import { FOOTER_CONFIG } from '@/config/footer';
 import type { DialogProps } from './types';
 
 export function FeedbackDialog({ open, onOpenChange }: DialogProps) {
+  const { effectType } = useGlassEffect();
   const [emailCopied, setEmailCopied] = useState(false);
 
   const copyEmail = async () => {
@@ -20,7 +22,7 @@ export function FeedbackDialog({ open, onOpenChange }: DialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className={getGlassOverlayClass("max-w-2xl", effectType)}>
         <DialogHeader className="text-center pb-4">
           <div className="mx-auto mb-4 w-16 h-16 bg-emerald-100 dark:bg-emerald-900/20 rounded-full flex items-center justify-center">
             <MessageCircle className="w-8 h-8 text-emerald-600" />

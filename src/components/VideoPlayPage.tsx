@@ -241,7 +241,7 @@ export function VideoPlayPage() {
             </div>
 
             {/* 视频详情信息 */}
-            <Card className="mt-4">
+            <Card className={getGlassClass("mt-4 bg-background/95 backdrop-blur-sm border", effectType)}>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Play className="h-5 w-5" />

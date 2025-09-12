@@ -1,11 +1,14 @@
 import { Shield } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { useGlassEffect, getGlassOverlayClass } from '@/contexts/GlassEffectContext';
 import type { DialogProps } from './types';
 
 export function UserAgreementDialog({ open, onOpenChange }: DialogProps) {
+  const { effectType } = useGlassEffect();
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl">
+      <DialogContent className={getGlassOverlayClass("max-w-3xl", effectType)}>
         <DialogHeader className="text-center pb-4">
           <div className="mx-auto mb-4 w-16 h-16 bg-cyan-100 dark:bg-cyan-900/20 rounded-full flex items-center justify-center">
             <Shield className="w-8 h-8 text-cyan-600" />
