@@ -120,9 +120,16 @@ export function VideoDetailModal({ video, isOpen, onClose, onPlay }: VideoDetail
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] p-0 overflow-hidden">
-        {/* 封面图和标题区域 */}
-        <div className="relative h-80 md:h-96 flex-shrink-0">
+      <DialogContent className="max-w-4xl max-h-[90vh] p-0 overflow-hidden flex flex-col">
+        <DialogDescription className="sr-only">
+          视频详情信息，包括剧情简介、演职员信息和播放选项
+        </DialogDescription>
+        
+        {/* 封面图和标题区域 - 动态高度 */}
+        <div 
+          className="relative flex-shrink-0 transition-all duration-300 ease-out overflow-hidden"
+          style={{ height: `${headerHeight}px` }}
+        >
           <img
             src={currentVideo.pic}
             alt={currentVideo.name}
@@ -142,7 +149,12 @@ export function VideoDetailModal({ video, isOpen, onClose, onPlay }: VideoDetail
           </div>
         </div>
         
-        <ScrollArea className="flex-1 min-h-0">
+        {/* 滚动内容区域 */}
+        <div 
+          className="flex-1 overflow-y-auto"
+          onScroll={handleScroll}
+          ref={scrollAreaRef}
+        >
           <div className="p-6">
             {loading ? (
               <div className="space-y-4">
@@ -251,7 +263,7 @@ export function VideoDetailModal({ video, isOpen, onClose, onPlay }: VideoDetail
               </Button>
             </div>
           </div>
-        </ScrollArea>
+        </div>
       </DialogContent>
     </Dialog>
   );
