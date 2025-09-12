@@ -316,10 +316,21 @@ body {
   font-weight: 500 !important;
 }
 
-/* Override for badges specifically - higher specificity */
+/* Override for badges specifically - higher specificity and stronger contrast */
 .dark .liquid-glass-overlay span[data-slot="badge"],
 .dark .liquid-glass span[data-slot="badge"] {
   color: white !important;
+  background-color: rgba(0, 0, 0, 0.7) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Light mode badge contrast in liquid glass */
+.liquid-glass-overlay span[data-slot="badge"],
+.liquid-glass span[data-slot="badge"] {
+  color: #000000 !important;
+  background-color: rgba(255, 255, 255, 0.8) !important;
+  border: 1px solid rgba(0, 0, 0, 0.2) !important;
+  font-weight: 600 !important;
 }
 
 /* Ensure buttons maintain proper text visibility while preserving hover effects */
