@@ -9,6 +9,7 @@ interface PlayResponse {
     index: number;
     label: string;
     parsedUrl: string;
+    proxyUrl: string;
     parseInfo: {
       headers: Record<string, string>;
       type: string;
@@ -158,7 +159,12 @@ class ApiService {
   async getVideoDetailById(videoId: number): Promise<{ videoInfo: PlayResponse; totalEpisodes: number } | null> {
     try {
       // 使用 parse/single 接口获取详细信息，episode从0开始
-      const response = await this.request<PlayResponse>(`/vod/parse/single?id=${videoId}&episode=0`, false);
+      const params = new URLSearchParams({
+        proxy: 'true',
+        id: videoId.toString(),
+        episode: "0" // 默认获取第一集的信息
+      });
+      const response = await this.request<PlayResponse>(`/vod/parse/single?${params}`, false);
       return {
         videoInfo: response,
         totalEpisodes: response.totalEpisodes || 1
@@ -171,6 +177,7 @@ class ApiService {
 
   async getVideoUrl(id: number, episode: number): Promise<{ url: string; videoInfo: PlayResponse }> {
     const params = new URLSearchParams({
+      proxy: 'true',
       id: id.toString(),
       episode: (episode - 1).toString() // 转换为基于0的索引
     });
@@ -178,7 +185,7 @@ class ApiService {
     const response = await this.request<PlayResponse>(`/vod/parse/single?${params}`, false);
     
     return {
-      url: response.episode.parsedUrl,
+      url: response.episode.proxyUrl,
       videoInfo: response
     };
   }
