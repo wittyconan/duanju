@@ -244,7 +244,14 @@ export function VideoDetailModal({ video, isOpen, onClose, onPlay }: VideoDetail
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-medium">开始播放</h3>
                 {totalEpisodes > 1 && (
-                  <Badge variant="secondary" className="text-white dark:text-white">
+                  <Badge
+                    variant="default"
+                    className="bg-black text-white font-bold px-2 py-1 text-sm"
+                    style={{
+                      boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)',
+                      border: '1px solid rgba(255, 255, 255, 0.5)'
+                    }}
+                  >
                     共{totalEpisodes}集
                   </Badge>
                 )}
