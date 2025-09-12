@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import type { VideoItem } from '@/types';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -21,6 +21,8 @@ export function VideoDetailModal({ video, isOpen, onClose, onPlay }: VideoDetail
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [, setAdditionalInfo] = useState<{ description?: string } | null>(null);
+  const [headerHeight, setHeaderHeight] = useState(320);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   const loadVideoDetails = useCallback(async () => {
     if (!video) return;
@@ -72,14 +74,31 @@ export function VideoDetailModal({ video, isOpen, onClose, onPlay }: VideoDetail
   useEffect(() => {
     if (video && isOpen) {
       loadVideoDetails();
+      setHeaderHeight(320); // 重置头部高度
     } else {
       // 重置状态
       setDetailedVideo(null);
       setTotalEpisodes(1);
       setError(null);
       setAdditionalInfo(null);
+      setHeaderHeight(320);
     }
   }, [video, isOpen, loadVideoDetails]);
+
+  // 滚动处理函数
+  const handleScroll = useCallback((event: React.UIEvent<HTMLDivElement>) => {
+    const scrollTop = event.currentTarget.scrollTop;
+    const minHeight = 120;
+    const maxHeight = 320;
+    const scrollThreshold = 200;
+    
+    if (scrollTop <= scrollThreshold) {
+      const newHeight = maxHeight - (scrollTop / scrollThreshold) * (maxHeight - minHeight);
+      setHeaderHeight(Math.max(minHeight, newHeight));
+    } else {
+      setHeaderHeight(minHeight);
+    }
+  }, []);
 
   const parseEpisodes = (remarks: string): number[] => {
     if (!remarks) return [1];
@@ -101,9 +120,9 @@ export function VideoDetailModal({ video, isOpen, onClose, onPlay }: VideoDetail
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[95vh] p-0 overflow-hidden">
+      <DialogContent className="max-w-4xl max-h-[90vh] p-0 overflow-hidden">
         {/* 封面图和标题区域 */}
-        <div className="relative h-96 md:h-120">
+        <div className="relative h-80 md:h-96 flex-shrink-0">
           <img
             src={currentVideo.pic}
             alt={currentVideo.name}
@@ -123,7 +142,7 @@ export function VideoDetailModal({ video, isOpen, onClose, onPlay }: VideoDetail
           </div>
         </div>
         
-        <ScrollArea className="flex-1 max-h-[calc(95vh-24rem)]">
+        <ScrollArea className="flex-1 min-h-0">
           <div className="p-6">
             {loading ? (
               <div className="space-y-4">

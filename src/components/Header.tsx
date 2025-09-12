@@ -1,6 +1,8 @@
 import { SearchBar } from './SearchBar';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from './ThemeToggle';
+import { GlassEffectToggle } from './GlassEffectToggle';
+import { useGlassEffect, getGlassClass } from '@/contexts/GlassEffectContext';
 import { Home, TrendingUp, Clock } from 'lucide-react';
 
 interface HeaderProps {
@@ -10,8 +12,10 @@ interface HeaderProps {
 }
 
 export function Header({ onSearch, onNavClick, searchInitialValue }: HeaderProps) {
+  const { effectType } = useGlassEffect();
+
   return (
-    <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-sm border-b">
+    <header className={getGlassClass("sticky top-0 z-50 bg-background/80 backdrop-blur-sm border-b", effectType)}>
       <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
         <div className="flex items-center space-x-2 cursor-pointer select-none" 
             onClick={() => onNavClick?.('home')}>
@@ -56,6 +60,7 @@ export function Header({ onSearch, onNavClick, searchInitialValue }: HeaderProps
             <TrendingUp className="h-4 w-4" />
             推荐
           </Button>
+          <GlassEffectToggle />
           <ThemeToggle />
         </nav>
       </div>

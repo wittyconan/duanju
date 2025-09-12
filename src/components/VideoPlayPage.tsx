@@ -14,11 +14,13 @@ import { VideoPlayerWithFallback } from './VideoPlayerWithFallback';
 import { VideoInfo } from './VideoInfo';
 import { EpisodeList } from './EpisodeList';
 import { VideoError } from './VideoError';
+import { useGlassEffect, getGlassClass } from '@/contexts/GlassEffectContext';
 import { toast } from 'sonner';
 
 export function VideoPlayPage() {
   const navigate = useNavigate();
   const { videoId, episode: episodeParam } = useParams();
+  const { effectType } = useGlassEffect();
   
   const [video, setVideo] = useState<VideoItem | null>(null);
   const [currentEpisode, setCurrentEpisode] = useState(parseInt(episodeParam || '1'));
@@ -168,7 +170,7 @@ export function VideoPlayPage() {
       <Header onSearch={handleSearch} onNavClick={handleNavClick} />
       
       {/* 视频信息栏 */}
-      <div className="bg-background/80 backdrop-blur-sm border-b">
+      <div className={getGlassClass("bg-background/80 backdrop-blur-sm border-b", effectType)}>
         <div className="max-w-7xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">

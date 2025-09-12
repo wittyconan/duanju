@@ -3,6 +3,7 @@ import { Play, Pause, Volume2, VolumeX, Maximize, SkipBack, SkipForward, Maximiz
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
+import { useGlassEffect, getGlassButtonClass } from '@/contexts/GlassEffectContext';
 import { toast } from 'sonner';
 
 // 常量配置
@@ -45,6 +46,7 @@ export function CustomVideoPlayer({
   const [playbackRate, setPlaybackRate] = useState(initialPlaybackRate);
   const [autoPlayNextEnabled, setAutoPlayNextEnabled] = useState(autoPlayNext);
   const [isWebFullscreen, setIsWebFullscreen] = useState(false);
+  const { effectType } = useGlassEffect();
 
   const controlsTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
@@ -455,7 +457,7 @@ export function CustomVideoPlayer({
           className="absolute inset-0 flex items-center justify-center bg-black/30 cursor-pointer"
           onClick={togglePlay}
         >
-          <div className="bg-white/20 backdrop-blur-sm rounded-full p-4 hover:bg-white/30 transition-colors">
+          <div className={getGlassButtonClass("bg-white/20 backdrop-blur-sm rounded-full p-4 hover:bg-white/30 transition-colors", effectType)}>
             <Play className="w-12 h-12 text-white ml-1" />
           </div>
         </div>

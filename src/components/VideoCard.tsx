@@ -1,6 +1,7 @@
 import type { VideoItem } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Play } from 'lucide-react';
+import { useGlassEffect, getGlassButtonClass } from '@/contexts/GlassEffectContext';
 
 // 页面级配置参数
 const CONFIG = {
@@ -8,19 +9,6 @@ const CONFIG = {
   fallback: {
     imageUrl: 'https://via.placeholder.com/300x400/cccccc/666666?text=暂无图片',
     aspectRatio: '2/3',
-  },
-  
-  // 样式类名配置
-  styles: {
-    card: 'relative cursor-pointer transform transition-all duration-300 hover:scale-105 hover:z-10 group rounded-lg overflow-hidden shadow-lg hover:shadow-2xl',
-    imageContainer: 'absolute inset-0 w-full h-full object-cover object-center',
-    aspectContainer: 'aspect-[3/4] relative bg-gray-100',
-    overlay: 'absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity',
-    playButton: 'absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300',
-    buttonStyle: 'bg-white/95 backdrop-blur-sm hover:bg-white text-black border-none shadow-xl scale-90 hover:scale-100 transition-transform',
-    infoOverlay: 'absolute bottom-0 left-0 right-0 p-3 text-white',
-    title: 'font-medium text-sm leading-tight mb-2 line-clamp-2 drop-shadow-sm',
-    tag: 'text-xs bg-white/20 backdrop-blur-sm px-2 py-0.5 rounded-full',
   },
   
   // 默认值配置
@@ -36,6 +24,21 @@ interface VideoCardProps {
 }
 
 export function VideoCard({ video, onClick, onPlay }: VideoCardProps) {
+  const { effectType } = useGlassEffect();
+
+  // 动态样式配置
+  const styles = {
+    card: 'relative cursor-pointer transform transition-all duration-300 hover:scale-105 hover:z-10 group rounded-lg overflow-hidden shadow-lg hover:shadow-2xl',
+    imageContainer: 'absolute inset-0 w-full h-full object-cover object-center',
+    aspectContainer: 'aspect-[3/4] relative bg-gray-100',
+    overlay: 'absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity',
+    playButton: 'absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300',
+    buttonStyle: getGlassButtonClass('bg-white/95 backdrop-blur-sm hover:bg-white text-black border-none shadow-xl scale-90 hover:scale-100 transition-transform', effectType),
+    infoOverlay: 'absolute bottom-0 left-0 right-0 p-3 text-white',
+    title: 'font-medium text-sm leading-tight mb-2 line-clamp-2 drop-shadow-sm',
+    tag: getGlassButtonClass('text-xs bg-white/20 backdrop-blur-sm px-2 py-0.5 rounded-full', effectType),
+  };
+
   const handlePlayClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     onPlay?.(video, CONFIG.defaults.firstEpisode);
@@ -43,14 +46,14 @@ export function VideoCard({ video, onClick, onPlay }: VideoCardProps) {
 
   return (
     <div 
-      className={CONFIG.styles.card}
+      className={styles.card}
       onClick={() => onClick(video)}
     >
-      <div className={CONFIG.styles.aspectContainer}>
+      <div className={styles.aspectContainer}>
         <img 
           src={video.pic} 
           alt={video.name}
-          className={CONFIG.styles.imageContainer}
+          className={styles.imageContainer}
           onError={(e) => {
             const target = e.target as HTMLImageElement;
             target.src = CONFIG.fallback.imageUrl;
@@ -58,15 +61,15 @@ export function VideoCard({ video, onClick, onPlay }: VideoCardProps) {
         />
         
         {/* 渐变蒙层 */}
-        <div className={CONFIG.styles.overlay} />
+        <div className={styles.overlay} />
         
         {/* 播放按钮覆盖层 */}
         {onPlay && (
-          <div className={CONFIG.styles.playButton}>
+          <div className={styles.playButton}>
             <Button
               onClick={handlePlayClick}
               size="sm"
-              className={CONFIG.styles.buttonStyle}
+              className={styles.buttonStyle}
             >
               <Play className="h-4 w-4 mr-1 fill-current" />
               播放
@@ -75,13 +78,13 @@ export function VideoCard({ video, onClick, onPlay }: VideoCardProps) {
         )}
         
         {/* 信息叠加 */}
-        <div className={CONFIG.styles.infoOverlay}>
-          <h3 className={CONFIG.styles.title}>
+        <div className={styles.infoOverlay}>
+          <h3 className={styles.title}>
             {video.name}
           </h3>
           <div className="flex flex-wrap gap-1">
             {video.area && (
-              <span className={CONFIG.styles.tag}>
+              <span className={styles.tag}>
                 {video.area}
               </span>
             )}
