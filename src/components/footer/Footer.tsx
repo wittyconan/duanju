@@ -11,6 +11,7 @@ import { PrivacyPolicyDialog } from './PrivacyPolicyDialog';
 import { UserGuideDialog } from './UserGuideDialog';
 import { FeedbackDialog } from './FeedbackDialog';
 import { SupportDialog } from './SupportDialog';
+import { VisitorStats } from './VisitorStats';
 
 export const Footer = React.memo(() => {
   const { state, openDialog, closeDialog } = useFooterState();
@@ -112,8 +113,11 @@ export const Footer = React.memo(() => {
             </div>
           </div>
           
-          <div className="border-t mt-8 pt-6 text-center text-sm text-muted-foreground">
-            <p>© {FOOTER_CONFIG.company.year} {FOOTER_CONFIG.company.name}. All rights reserved.</p>
+          <div className="border-t mt-8 pt-6 text-sm text-muted-foreground">
+            <div className="flex flex-col md:flex-row md:justify-between md:items-center space-y-2 md:space-y-0">
+              <p>© {FOOTER_CONFIG.company.year} {FOOTER_CONFIG.company.name}. All rights reserved.</p>
+              <VisitorStats />
+            </div>
           </div>
         </div>
       </footer>
