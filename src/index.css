@@ -377,3 +377,29 @@ body {
   color: white !important;
 }
 
+/* Episode switching animation */
+.video-container.episode-switching {
+  opacity: 0.7;
+  transform: scale(0.98);
+}
+
+.video-container {
+  transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+}
+
+/* Smooth episode loading */
+.episode-loading {
+  backdrop-filter: blur(8px);
+  transition: all 0.3s ease-out;
+}
+
+/* Episode transition effects */
+@keyframes episodeSwitch {
+  0% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.episode-switching {
+  animation: episodeSwitch 0.5s ease-in-out;
+}

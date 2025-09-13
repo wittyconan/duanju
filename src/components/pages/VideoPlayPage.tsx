@@ -31,7 +31,9 @@ export function VideoPlayPage() {
   const [error, setError] = useState<string | null>(null);
   const [pageLoading, setPageLoading] = useState(true);
   const [autoPlayNext, setAutoPlayNext] = useState(true);
+  const [lastLoadedEpisode, setLastLoadedEpisode] = useState<number | null>(null);
   const [playbackRate, setPlaybackRate] = useState(1);
+  const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
     if (videoId) {
@@ -60,16 +62,31 @@ export function VideoPlayPage() {
     }
   }, [videoId]);
 
-  const loadEpisode = useCallback(async (episode: number) => {
+  const loadEpisode = useCallback(async (episode: number, retry = 0) => {
     if (!video || loading) return; // 防止重复加载
+    
+    // 如果是相同集数且已经加载过，直接返回（但重试时不跳过）
+    if (episode === lastLoadedEpisode && videoUrl && retry === 0) {
+      return;
+    }
     
     setLoading(true);
     setError(null);
+    setRetryCount(retry);
+    
+    // 添加切换动画效果
+    const videoContainer = document.querySelector('.video-container');
+    if (videoContainer) {
+      videoContainer.classList.add('episode-switching');
+    }
+    
     try {
       const response = await apiService.getVideoUrl(video.id, episode);
       if (response.url) {
         setVideoUrl(response.url);
         setVideoInfo(response.videoInfo);
+        setLastLoadedEpisode(episode); // 记录已加载的集数
+        setRetryCount(0); // 重置重试计数
         
         // 如果总集数大于1，更新集数列表
         if (response.videoInfo?.totalEpisodes > 1) {
@@ -79,25 +96,60 @@ export function VideoPlayPage() {
       }
     } catch (error) {
       console.error('加载视频失败:', error);
-      setError('视频加载失败，请稍后重试');
+      
+      // 自动重试逻辑 (最多重试2次)
+      if (retry < 2) {
+        console.log(`自动重试加载第${episode}集，重试次数: ${retry + 1}`);
+        if (retry === 0) {
+          toast.info('加载失败，正在自动重试...', {
+            duration: 2000,
+            position: 'top-center'
+          });
+        }
+        setTimeout(() => {
+          loadEpisode(episode, retry + 1);
+        }, 1000 * (retry + 1)); // 递增延迟：1s, 2s
+      } else {
+        setError('视频加载失败，已自动重试2次，请手动重试或稍后再试');
+        toast.error('视频加载失败，请手动重试', {
+          duration: 3000,
+          position: 'top-center'
+        });
+      }
     } finally {
       setLoading(false);
+      // 移除切换动画效果
+      setTimeout(() => {
+        const videoContainer = document.querySelector('.video-container');
+        if (videoContainer) {
+          videoContainer.classList.remove('episode-switching');
+        }
+      }, 300);
     }
-  }, [video, loading]);
+  }, [video, loading, lastLoadedEpisode, videoUrl, retryCount]);
 
   useEffect(() => {
     if (video && currentEpisode) {
       loadEpisode(currentEpisode);
-      // 只有当URL参数与当前集数不匹配时才更新URL
+      
+      // 始终更新URL以保持一致性，无论是否为第1集
       const currentEpisodeFromUrl = parseInt(episodeParam || '1');
-      if (currentEpisode !== currentEpisodeFromUrl) {
-        navigate(`/play/${video.id}/${currentEpisode}`, { replace: true });
+      const newUrl = `/play/${video.id}/${currentEpisode}`;
+      
+      // 只有当URL确实需要改变时才更新
+      if (currentEpisode !== currentEpisodeFromUrl || window.location.pathname !== newUrl) {
+        window.history.replaceState(null, '', newUrl);
       }
+      
       document.title = `瞬剧｜${video.name} - 第${currentEpisode}集`;
     }
-  }, [video, currentEpisode, episodeParam, navigate]);
+  }, [video, currentEpisode, episodeParam]);
 
   const handleEpisodeChange = (episode: number) => {
+    // 避免重复点击同一集导致重新加载
+    if (episode === currentEpisode) {
+      return;
+    }
     setCurrentEpisode(episode);
   };
 
@@ -198,17 +250,24 @@ export function VideoPlayPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* 左侧视频播放器 */}
           <div className="lg:col-span-2">
-            <div className="overflow-hidden rounded-lg">
+            <div className="video-container overflow-hidden rounded-lg transition-all duration-300">
               <div className="aspect-video relative">
                 {loading ? (
-                  <div className="flex items-center justify-center h-full">
-                    <div className="text-white">加载中...</div>
+                  <div className="flex items-center justify-center h-full bg-black/50 backdrop-blur-sm">
+                    <div className="text-white text-center">
+                      <div className="animate-spin w-8 h-8 border-2 border-white border-t-transparent rounded-full mx-auto mb-2"></div>
+                      <div>{retryCount > 0 ? `重试中... (${retryCount}/2)` : '切换中...'}</div>
+                    </div>
                   </div>
                 ) : error ? (
                   <VideoError
                     error={error}
                     videoPic={video?.pic}
-                    onRetry={() => loadEpisode(currentEpisode)}
+                    onRetry={() => {
+                      setRetryCount(0); // 重置重试计数
+                      setLastLoadedEpisode(null); // 清除缓存，强制重新加载
+                      loadEpisode(currentEpisode);
+                    }}
                     onDirectPlay={handleTryDirectPlay}
                     onDownload={handleDownload}
                   />
