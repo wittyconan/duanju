@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState, useCallback, useMemo } from 'react';
-import { Play, Pause, Volume2, VolumeX, Maximize, SkipBack, SkipForward, Maximize2, PlayCircle, Minimize2 } from 'lucide-react';
+import { Play, Pause, Volume2, VolumeX, Maximize, SkipBack, SkipForward, Maximize2, PlayCircle, Minimize2, PictureInPicture } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
@@ -22,23 +22,29 @@ interface CustomVideoPlayerProps {
   autoPlayNext?: boolean;
   playbackRate?: number;
   onPlaybackRateChange?: (rate: number) => void;
+  onFloatingPlayClick?: () => void;
+  isFloatingMode?: boolean;
+  initialCurrentTime?: number;
 }
 
-export function CustomVideoPlayer({ 
-  src, 
-  onError, 
-  onLoadedMetadata, 
-  onEnded, 
-  className, 
-  autoPlay = true, 
+export function CustomVideoPlayer({
+  src,
+  onError,
+  onLoadedMetadata,
+  onEnded,
+  className,
+  autoPlay = true,
   autoPlayNext = false,
   playbackRate: initialPlaybackRate = 1,
-  onPlaybackRateChange
+  onPlaybackRateChange,
+  onFloatingPlayClick,
+  isFloatingMode = false,
+  initialCurrentTime = 0
 }: CustomVideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
+  const [currentTime, setCurrentTime] = useState(initialCurrentTime);
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(0.4);
   const [isMuted, setIsMuted] = useState(false);
@@ -75,6 +81,15 @@ export function CustomVideoPlayer({
     };
     const handleLoadedMetadata = () => {
       setDuration(video.duration);
+      // 设置初始播放时间
+      if (initialCurrentTime > 0) {
+        video.currentTime = initialCurrentTime;
+        setCurrentTime(initialCurrentTime);
+      } else {
+        // 如果是新的视频源（集数切换），从0开始
+        video.currentTime = 0;
+        setCurrentTime(0);
+      }
       onLoadedMetadata?.();
     };
 
@@ -135,7 +150,7 @@ export function CustomVideoPlayer({
       video.removeEventListener('loadedmetadata', handleLoadedMetadata);
       document.removeEventListener('fullscreenchange', handleFullscreenChange);
     };
-  }, [onError, onLoadedMetadata, src, playbackRate]);
+  }, [onError, onLoadedMetadata, src, playbackRate, initialCurrentTime]);
 
   // 自动播放逻辑
   useEffect(() => {
@@ -202,6 +217,13 @@ export function CustomVideoPlayer({
       }
     }
   }, [initialPlaybackRate, playbackRate]);
+
+  // 当视频源变化时重置播放时间状态
+  useEffect(() => {
+    if (initialCurrentTime === 0) {
+      setCurrentTime(0);
+    }
+  }, [src, initialCurrentTime]);
 
   const togglePlay = useCallback(() => {
     const video = videoRef.current;
@@ -332,39 +354,49 @@ export function CustomVideoPlayer({
   // 渲染控制按钮
   const renderPlaybackControls = useMemo(() => (
     <div className="flex items-center gap-2">
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={togglePlay}
-        className="text-white hover:bg-white/20 hover:text-white transition-colors"
-      >
-        {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-      </Button>
+      {!isFloatingMode && (
+        <>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={togglePlay}
+            className="text-white hover:bg-white/20 hover:text-white transition-colors"
+          >
+            {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+          </Button>
 
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => skipTime(-10)}
-        className="text-white hover:bg-white/20 hover:text-white transition-colors"
-      >
-        <SkipBack className="w-4 h-4" />
-      </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => skipTime(-10)}
+            className="text-white hover:bg-white/20 hover:text-white transition-colors"
+          >
+            <SkipBack className="w-4 h-4" />
+          </Button>
 
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => skipTime(10)}
-        className="text-white hover:bg-white/20 hover:text-white transition-colors"
-      >
-        <SkipForward className="w-4 h-4" />
-      </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => skipTime(10)}
+            className="text-white hover:bg-white/20 hover:text-white transition-colors"
+          >
+            <SkipForward className="w-4 h-4" />
+          </Button>
+        </>
+      )}
 
       <div className="flex items-center gap-2 ml-2">
         <Button
           variant="ghost"
           size="sm"
           onClick={toggleMute}
-          className="text-white hover:bg-white/20 hover:text-white transition-colors"
+          className={`transition-colors ${
+            isFloatingMode 
+              ? (effectType === 'liquid'
+                ? 'text-white bg-white/20 hover:bg-white/30 border border-white/40'
+                : 'text-white bg-white/10 hover:bg-white/20 border border-white/20')
+              : 'text-white hover:bg-white/20 hover:text-white'
+          }`}
         >
           {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
         </Button>
@@ -379,62 +411,101 @@ export function CustomVideoPlayer({
         </div>
       </div>
     </div>
-  ), [isPlaying, togglePlay, skipTime, isMuted, toggleMute, volume, handleVolumeChange]);
+  ), [isPlaying, togglePlay, skipTime, isMuted, toggleMute, volume, handleVolumeChange, isFloatingMode, effectType]);
 
   // 渲染右侧控制按钮
   const renderRightControls = useMemo(() => (
     <div className="flex items-center gap-2">
-      <span className="text-white text-sm">
+      <span
+        className={`text-sm font-medium video-time-display ${
+          isFloatingMode
+            ? (effectType === 'liquid'
+              ? 'text-white bg-black/70 px-2 py-1 rounded border border-white/30'
+              : 'text-white bg-black/50 px-2 py-1 rounded border border-white/20')
+            : 'text-white'
+        }`}
+      >
         {formatTime(currentTime)} / {formatTime(duration)}
       </span>
 
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={handlePlaybackRateChange}
-        className="text-white hover:bg-white/20 hover:text-white min-w-[48px] transition-colors"
-        title={`当前倍速: ${playbackRate}x，点击切换`}
-      >
-        <span className="text-xs font-medium">{playbackRate}x</span>
-      </Button>
+      {!isFloatingMode && (
+        <>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handlePlaybackRateChange}
+            className="text-white hover:bg-white/20 hover:text-white min-w-[48px] transition-colors"
+            title={`当前倍速: ${playbackRate}x，点击切换`}
+          >
+            <span className="text-xs font-medium">{playbackRate}x</span>
+          </Button>
 
-      <div className="flex items-center gap-2 text-white">
-        <PlayCircle className="w-4 h-4" />
-        <span className="text-xs font-medium whitespace-nowrap">自动下一集</span>
-        <Switch
-          checked={autoPlayNextEnabled}
-          onCheckedChange={(checked) => {
-            setAutoPlayNextEnabled(checked);
-            toast.success(checked ? '已开启自动下一集' : '已关闭自动下一集', {
-              duration: 1500,
-              position: 'top-center'
-            });
-          }}
-          className="data-[state=checked]:bg-blue-500 data-[state=unchecked]:bg-gray-600"
-        />
-      </div>
+          <div className="flex items-center gap-2 text-white">
+            <PlayCircle className="w-4 h-4" />
+            <span className="text-xs font-medium whitespace-nowrap">自动下一集</span>
+            <Switch
+              checked={autoPlayNextEnabled}
+              onCheckedChange={(checked) => {
+                setAutoPlayNextEnabled(checked);
+                toast.success(checked ? '已开启自动下一集' : '已关闭自动下一集', {
+                  duration: 1500,
+                  position: 'top-center'
+                });
+              }}
+              className="data-[state=checked]:bg-blue-500 data-[state=unchecked]:bg-gray-600"
+            />
+          </div>
 
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={toggleWebFullscreen}
-        className="text-white hover:bg-white/20 hover:text-white transition-colors"
-        title={isWebFullscreen ? "退出网页全屏" : "网页全屏"}
-      >
-        {isWebFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
-      </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onFloatingPlayClick}
+            className="text-white hover:bg-white/20 hover:text-white transition-colors"
+            title="浮动播放"
+          >
+            <PictureInPicture className="w-4 h-4" />
+          </Button>
 
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={toggleFullscreen}
-        className="text-white hover:bg-white/20 hover:text-white transition-colors"
-        title="浏览器全屏"
-      >
-        <Maximize className="w-4 h-4" />
-      </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={toggleWebFullscreen}
+            className="text-white hover:bg-white/20 hover:text-white transition-colors"
+            title={isWebFullscreen ? "退出网页全屏" : "网页全屏"}
+          >
+            {isWebFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={toggleFullscreen}
+            className="text-white hover:bg-white/20 hover:text-white transition-colors"
+            title="浏览器全屏"
+          >
+            <Maximize className="w-4 h-4" />
+          </Button>
+        </>
+      )}
+
+      {/* 浮动模式下添加倍速按钮 */}
+      {isFloatingMode && (
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handlePlaybackRateChange}
+          className={`min-w-[48px] transition-colors ${
+            effectType === 'liquid'
+              ? 'text-white bg-white/20 hover:bg-white/30 border border-white/40'
+              : 'text-white bg-white/10 hover:bg-white/20 border border-white/20'
+          }`}
+          title={`当前倍速: ${playbackRate}x，点击切换`}
+        >
+          <span className="text-xs font-medium">{playbackRate}x</span>
+        </Button>
+      )}
     </div>
-  ), [currentTime, duration, formatTime, playbackRate, handlePlaybackRateChange, autoPlayNextEnabled, isWebFullscreen, toggleWebFullscreen, toggleFullscreen]);
+  ), [currentTime, duration, formatTime, playbackRate, handlePlaybackRateChange, autoPlayNextEnabled, isWebFullscreen, toggleWebFullscreen, toggleFullscreen, onFloatingPlayClick, isFloatingMode, effectType]);
 
   return (
     <div 

@@ -44,21 +44,27 @@ interface VideoPlayerWithFallbackProps {
   autoPlayNext?: boolean;
   playbackRate?: number;
   onPlaybackRateChange?: (rate: number) => void;
+  onFloatingPlayClick?: () => void;
+  isFloatingMode?: boolean;
+  initialCurrentTime?: number;
 }
 
 type PlaybackMode = 'direct' | 'external' | 'error';
 
-export function VideoPlayerWithFallback({ 
-  src, 
+export function VideoPlayerWithFallback({
+  src,
   videoPic,
-  onError, 
-  onLoadedMetadata, 
+  onError,
+  onLoadedMetadata,
   onEnded,
-  className, 
+  className,
   autoPlay = true,
   autoPlayNext = false,
   playbackRate = 1,
-  onPlaybackRateChange
+  onPlaybackRateChange,
+  onFloatingPlayClick,
+  isFloatingMode = false,
+  initialCurrentTime = 0
 }: VideoPlayerWithFallbackProps) {
   const [playbackMode, setPlaybackMode] = useState<PlaybackMode>('direct');
   const [errorCount, setErrorCount] = useState(0);
@@ -100,6 +106,9 @@ export function VideoPlayerWithFallback({
         autoPlayNext={autoPlayNext}
         playbackRate={playbackRate}
         onPlaybackRateChange={onPlaybackRateChange}
+        onFloatingPlayClick={onFloatingPlayClick}
+        isFloatingMode={isFloatingMode}
+        initialCurrentTime={initialCurrentTime}
       />
     );
   }

@@ -14,6 +14,7 @@ import { VideoPlayerWithFallback } from '@/components/video/VideoPlayerWithFallb
 import { VideoInfo } from '@/components/video/VideoInfo';
 import { EpisodeList } from '@/components/video/EpisodeList';
 import { VideoError } from '@/components/video/VideoError';
+import { FloatingPlayDialog } from '@/components/video/FloatingPlayDialog';
 import { useGlassEffect, getGlassClass } from '@/contexts/GlassEffectContext';
 import { toast } from 'sonner';
 
@@ -34,6 +35,11 @@ export function VideoPlayPage() {
   const [lastLoadedEpisode, setLastLoadedEpisode] = useState<number | null>(null);
   const [playbackRate, setPlaybackRate] = useState(1);
   const [retryCount, setRetryCount] = useState(0);
+  const [isFloatingPlayOpen, setIsFloatingPlayOpen] = useState(false);
+  const [currentPlayTime, setCurrentPlayTime] = useState(0);
+  const [floatingEpisode, setFloatingEpisode] = useState(1);
+  const [floatingVideoUrl, setFloatingVideoUrl] = useState('');
+  const [floatingEpisodeLoading, setFloatingEpisodeLoading] = useState(false);
 
   useEffect(() => {
     if (videoId) {
@@ -130,20 +136,38 @@ export function VideoPlayPage() {
 
   useEffect(() => {
     if (video && currentEpisode) {
-      loadEpisode(currentEpisode);
-      
+      // 如果浮窗打开，不要让主播放器加载新集数
+      if (!isFloatingPlayOpen) {
+        loadEpisode(currentEpisode);
+      }
+
       // 始终更新URL以保持一致性，无论是否为第1集
       const currentEpisodeFromUrl = parseInt(episodeParam || '1');
       const newUrl = `/play/${video.id}/${currentEpisode}`;
-      
+
       // 只有当URL确实需要改变时才更新
       if (currentEpisode !== currentEpisodeFromUrl || window.location.pathname !== newUrl) {
         window.history.replaceState(null, '', newUrl);
       }
-      
+
       document.title = `瞬剧｜${video.name} - 第${currentEpisode}集`;
     }
-  }, [video, currentEpisode, episodeParam]);
+  }, [video, currentEpisode, episodeParam, isFloatingPlayOpen]);
+
+  // 确保在浮窗打开期间主播放器保持暂停状态
+  useEffect(() => {
+    if (!isFloatingPlayOpen) return;
+
+    const interval = setInterval(() => {
+      const mainVideo = document.querySelector('video') as HTMLVideoElement;
+      if (mainVideo && !mainVideo.paused) {
+        console.log('主播放器在浮窗模式下播放，强制暂停');
+        mainVideo.pause();
+      }
+    }, 500);
+
+    return () => clearInterval(interval);
+  }, [isFloatingPlayOpen]);
 
   const handleEpisodeChange = (episode: number) => {
     // 避免重复点击同一集导致重新加载
@@ -152,6 +176,42 @@ export function VideoPlayPage() {
     }
     setCurrentEpisode(episode);
   };
+
+  // 专门处理浮窗的集数切换，不影响主播放器
+  const handleFloatingEpisodeChange = useCallback(async (episode: number) => {
+    if (!video || floatingEpisodeLoading) return; // 防止重复请求
+
+    console.log('浮窗切换到第', episode, '集，重置播放时间为0');
+    setFloatingEpisodeLoading(true);
+
+    // 首先重置播放时间
+    setCurrentPlayTime(0);
+
+    // 为浮窗加载新集数的视频URL
+    try {
+      const response = await apiService.getVideoUrl(video.id, episode);
+      if (response.url) {
+        // 只有成功获取到新视频URL后，才更新集数和URL状态
+        setFloatingVideoUrl(response.url);
+        setFloatingEpisode(episode);
+
+        // 更新路由以保持URL和当前播放集数同步
+        const newUrl = `/play/${video.id}/${episode}`;
+        window.history.replaceState(null, '', newUrl);
+        document.title = `瞬剧｜${video.name} - 第${episode}集`;
+
+        console.log('浮窗加载新集数视频URL成功');
+      } else {
+        console.error('浮窗加载视频失败: 未获得视频URL');
+        // 可以考虑显示错误提示给用户
+      }
+    } catch (error) {
+      console.error('浮窗加载视频失败:', error);
+      // 保持原有集数和URL，不进行切换
+    } finally {
+      setFloatingEpisodeLoading(false);
+    }
+  }, [video, floatingEpisodeLoading]);
 
   const handleDownload = () => {
     if (videoUrl && video) {
@@ -190,6 +250,24 @@ export function VideoPlayPage() {
       // 在新窗口打开视频链接，让浏览器直接处理
       window.open(videoUrl, '_blank');
     }
+  };
+
+  const handleFloatingPlay = () => {
+    // 获取主播放器的当前时间
+    const mainVideo = document.querySelector('video') as HTMLVideoElement;
+    let currentTime = 0;
+    if (mainVideo) {
+      currentTime = mainVideo.currentTime;
+      mainVideo.pause();
+    }
+
+    // 存储当前播放时间，用于浮动播放器
+    setCurrentPlayTime(currentTime);
+    // 初始化浮窗集数为当前集数
+    setFloatingEpisode(currentEpisode);
+    // 初始化浮窗的视频URL为当前URL
+    setFloatingVideoUrl(videoUrl);
+    setIsFloatingPlayOpen(true);
   };
 
   if (pageLoading) {
@@ -278,9 +356,11 @@ export function VideoPlayPage() {
                     onError={handleVideoError}
                     onLoadedMetadata={() => setError(null)}
                     onEnded={handleVideoEnded}
+                    autoPlay={!isFloatingPlayOpen}
                     autoPlayNext={autoPlayNext}
                     playbackRate={playbackRate}
                     onPlaybackRateChange={setPlaybackRate}
+                    onFloatingPlayClick={handleFloatingPlay}
                     className="w-full h-full"
                   />
                 )}
@@ -329,6 +409,38 @@ export function VideoPlayPage() {
       
       <Footer />
       <BackToTop />
+      
+      {/* 浮动播放 Dialog */}
+      <FloatingPlayDialog
+        open={isFloatingPlayOpen}
+        onOpenChange={(open) => {
+          setIsFloatingPlayOpen(open);
+          // 当浮动播放关闭时，同步播放时间到主播放器
+          if (!open) {
+            const mainVideo = document.querySelector('video') as HTMLVideoElement;
+            if (mainVideo && currentPlayTime > 0) {
+              mainVideo.currentTime = currentPlayTime;
+            }
+            // 浮窗关闭后，同步集数状态到主播放器
+            if (floatingEpisode !== currentEpisode) {
+              setCurrentEpisode(floatingEpisode);
+            }
+          }
+        }}
+        videoUrl={floatingVideoUrl}
+        videoPic={video?.pic}
+        currentEpisode={floatingEpisode}
+        episodeList={episodeList}
+        onEpisodeChange={handleFloatingEpisodeChange}
+        onVideoError={handleVideoError}
+        onVideoEnded={handleVideoEnded}
+        autoPlayNext={autoPlayNext}
+        playbackRate={playbackRate}
+        onPlaybackRateChange={setPlaybackRate}
+        initialCurrentTime={currentPlayTime}
+        onCurrentTimeChange={setCurrentPlayTime}
+        episodeLoading={floatingEpisodeLoading}
+      />
     </div>
   );
 }

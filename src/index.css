@@ -403,3 +403,74 @@ body {
 .episode-switching {
   animation: episodeSwitch 0.5s ease-in-out;
 }
+
+/* Floating Player Controls - Fix text visibility in liquid glass mode */
+.floating-player-controls {
+  /* Force white text for all elements in liquid glass light mode */
+}
+
+.liquid-glass-overlay .floating-player-controls *,
+.liquid-glass-overlay .floating-player-controls button,
+.liquid-glass-overlay .floating-player-controls span,
+.liquid-glass-overlay .floating-player-controls div {
+  color: white !important;
+}
+
+.liquid-glass-overlay .floating-player-controls svg {
+  color: white !important;
+  stroke: white !important;
+}
+
+/* Ensure buttons have proper contrast in liquid glass mode */
+.liquid-glass-overlay .floating-player-controls button {
+  background-color: rgba(0, 0, 0, 0.8) !important;
+  border-color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.liquid-glass-overlay .floating-player-controls button:hover {
+  background-color: rgba(0, 0, 0, 0.6) !important;
+  border-color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.liquid-glass-overlay .floating-player-controls button:disabled {
+  background-color: rgba(0, 0, 0, 0.4) !important;
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.liquid-glass-overlay .floating-player-controls button:disabled svg {
+  color: rgba(255, 255, 255, 0.5) !important;
+  stroke: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Video player time display fix for liquid glass mode */
+.liquid-glass-overlay .video-time-display {
+  color: white !important;
+  background-color: rgba(0, 0, 0, 0.8) !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Specifically target floating video player time display */
+.liquid-glass-overlay .floating-video .video-time-display,
+.liquid-glass-overlay .floating-video span.video-time-display,
+.liquid-glass-overlay .floating-video .text-sm.font-medium {
+  color: white !important;
+  background-color: rgba(0, 0, 0, 0.8) !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Broader targeting for floating video player controls */
+.liquid-glass-overlay .floating-video span,
+.liquid-glass-overlay .floating-video .text-sm {
+  color: white !important;
+}
+
+/* Ensure all text elements in floating video are white */
+.liquid-glass-overlay .floating-video * {
+  color: white !important;
+}
+
+/* Force all floating video control buttons to have white text */
+.liquid-glass-overlay .floating-video button,
+.liquid-glass-overlay .floating-video button * {
+  color: white !important;
+}
