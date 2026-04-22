@@ -11,6 +11,7 @@ import { BackToTop } from '@/components/layout/BackToTop';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { apiService } from '@/services/api';
 import type { VideoCategory, VideoItem } from '@/types';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export function HomePage() {
   const navigate = useNavigate();
@@ -26,10 +27,37 @@ export function HomePage() {
   const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [pagination, setPagination] = useState({ total: 0, totalPages: 0, currentPage: 1 });
   const [currentPage, setCurrentPage] = useState(1);
+  const [sources, setSources] = useState<any[]>([]);
+  const [currentSource, setCurrentSource] = useState<string>('');
 
   useEffect(() => {
     loadCategories();
+    loadSources();
   }, []);
+
+  const loadSources = async () => {
+    try {
+      const availableSources = apiService.getAvailableSources();
+      setSources(availableSources);
+      const current = apiService.getCurrentSource();
+      if (current) {
+        setCurrentSource(current.id);
+      }
+    } catch (error) {
+      console.error('Failed to load sources:', error);
+    }
+  };
+
+  const handleSourceChange = (sourceId: string) => {
+    setCurrentSource(sourceId);
+    apiService.switchSource(sourceId);
+    // 切换数据源后重新加载数据
+    if (isRecommendMode) {
+      loadRecommendedVideos();
+    } else if (activeCategory) {
+      loadVideosByCategory(activeCategory, 1);
+    }
+  };
 
   useEffect(() => {
     if (categories.length > 0) {
@@ -257,6 +285,22 @@ export function HomePage() {
       <Header onSearch={handleSearch} onNavClick={handleNavClick} />
       
       <main className="max-w-7xl mx-auto">
+        {/* 数据源选择器 */}
+        <div className="px-4 py-2 flex justify-end">
+          <Select value={currentSource} onValueChange={handleSourceChange}>
+            <SelectTrigger className="w-[200px]">
+              <SelectValue placeholder="选择数据源" />
+            </SelectTrigger>
+            <SelectContent>
+              {sources.map((source) => (
+                <SelectItem key={source.id} value={source.id}>
+                  {source.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        
         {categoriesLoading ? (
           <CategoryNavSkeleton />
         ) : (

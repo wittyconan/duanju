@@ -1,7 +1,47 @@
-import type { CategoriesResponse, RecommendResponse, ListResponse, VideoItem, RecommendVideoItem, ListVideoItem } from '@/types';
+import type { CategoriesResponse, VideoItem } from '@/types';
 
-// 使用相对路径，在开发环境中会通过Vite代理，在生产环境中会通过Cloudflare Pages路由规则代理
-const BASE_URL = '/api-proxy';
+// 可用的视频数据源列表
+const VIDEO_SOURCES = [
+  { id: 'hongniu', name: '紅牛資源', api: 'http://hongniuzy2.com/api.php/provide/vod/from/hnm3u8' },
+  { id: 'liangzi', name: '量子資源', api: 'http://cj.lziapi.com/api.php/provide/vod/from/lzm3u8' },
+  { id: 'wolong', name: '卧龙资源', api: 'http://collect.wolongzyw.com/api.php/provide/vod' },
+  { id: 'senlin', name: '森林资源', api: 'http://slapibf.com/api.php/provide/vod' },
+  { id: 'shandian', name: '閃電資源', api: 'http://sdzyapi.com/api.php/provide/vod/from/sdm3u8' },
+  { id: 'jinying', name: '金鹰资源', api: 'http://jyzyapi.com/provide/vod/from/jinyingm3u8' },
+  { id: 'guangsu', name: '光速资源', api: 'http://api.guangsuapi.com/api.php/provide/vod/from/gsm3u8' },
+  { id: 'aosika', name: '奥斯卡资源网', api: 'http://aosikazy.com/api.php/provide/vod' },
+  { id: 'yinghua', name: '樱花资源网', api: 'http://m3u8.apiyhzy.com/api.php/provide/vod' },
+  { id: 'shandian2', name: '闪电资源', api: 'http://sdzyapi.com/api.php/provide/vod' },
+  { id: 'baidu', name: '百度资源', api: 'http://api.apibdzy.com/api.php/provide/vod' },
+  { id: 'sanliuling', name: '360|点播', api: 'https://360zy.com/api.php/provide/vod/' },
+  { id: 'niuniu', name: '牛牛|点播', api: 'https://api.niuniuzy.me/api.php/provide/vod/' },
+  { id: 'yaya', name: '丫丫|点播', api: 'https://cj.yayazy.net/api.php/provide/vod/' },
+  { id: 'haohua', name: '豪华|点播', api: 'https://hhzyapi.com/api.php/provide/vod' },
+  { id: 'jisu', name: '极速|点播', api: 'https://jszyapi.com/api.php/provide/vod' },
+  { id: 'suoni', name: '索尼|点播', api: 'https://suoniapi.com/api.php/provide/vod/' },
+  { id: 'feifan', name: '非凡|点播', api: 'http://cj.ffzyapi.com/api.php/provide/vod/' },
+  { id: 'liangzi2', name: '量子|点播', api: 'https://cj.lziapi.com/api.php/provide/vod/' },
+  { id: 'baofeng', name: '暴风|点播', api: 'https://bfzyapi.com/api.php/provide/vod/' },
+  { id: 'hongniu2', name: '红牛|点播', api: 'https://www.hongniuzy2.com/api.php/provide/vod/' },
+  { id: 'shandian3', name: '闪电|点播', api: 'http://sdzyapi.com/api.php/provide/vod/' },
+  { id: 'yinghua2', name: '樱花|点播', api: 'https://m3u8.apiyhzy.com/api.php/provide/vod/' },
+  { id: 'wolong2', name: '卧龙|点播', api: 'https://collect.wolongzyw.com/api.php/provide/vod/' },
+  { id: 'huya', name: '虎牙|点播', api: 'https://www.huyaapi.com/api.php/provide/vod/' },
+  { id: 'baidu2', name: '百度|点播', api: 'https://api.apibdzy.com/api.php/provide/vod/' },
+  { id: 'piaoling', name: '飘零|点播', api: 'https://p2100.net/api.php/provide/vod/' },
+  { id: 'wujin', name: '无尽|点播', api: 'https://api.wujinapi.com/api.php/provide/vod/' },
+  { id: 'subo', name: '速博|点播', api: 'https://subocaiji.com/api.php/provide/vod/' },
+  { id: 'modu', name: '魔都|点播', api: 'https://caiji.moduapi.cc/api.php/provide/vod/' },
+  { id: 'zuida', name: '最大|点播', api: 'http://zuidazy.me/api.php/provide/vod/' },
+  { id: 'haohua2', name: '火狐|点播', api: 'https://hhzyapi.com/api.php/provide/vod/' },
+  { id: 'xinlang', name: '新浪|点播', api: 'https://api.xinlangapi.com/xinlangapi.php/provide/vod/' }
+];
+
+// 默认使用第一个数据源
+let currentSource = VIDEO_SOURCES[0];
+
+// 使用当前数据源的API地址
+let BASE_URL = currentSource.api;
 
 interface PlayResponse {
   videoId: number;
@@ -25,6 +65,28 @@ class ApiService {
   private cache = new Map<string, { data: unknown; timestamp: number }>();
   private readonly CACHE_DURATION = 5 * 60 * 1000; // 5分钟缓存
 
+  // 获取所有可用的数据源
+  getAvailableSources() {
+    return VIDEO_SOURCES;
+  }
+
+  // 切换数据源
+  switchSource(sourceId: string) {
+    const source = VIDEO_SOURCES.find(s => s.id === sourceId);
+    if (source) {
+      currentSource = source;
+      BASE_URL = source.api;
+      this.cache.clear(); // 切换数据源后清空缓存
+      return true;
+    }
+    return false;
+  }
+
+  // 获取当前数据源
+  getCurrentSource() {
+    return currentSource;
+  }
+
   private getCacheKey(endpoint: string): string {
     return endpoint;
   }
@@ -44,7 +106,18 @@ class ApiService {
       }
     }
 
-    const response = await fetch(`${BASE_URL}${endpoint}`);
+    // 对于不同的数据源，可能需要添加不同的参数
+    let url = `${BASE_URL}`;
+    if (endpoint) {
+      // 检查是否已经有查询参数
+      if (url.includes('?')) {
+        url += `&${endpoint}`;
+      } else {
+        url += `?${endpoint}`;
+      }
+    }
+
+    const response = await fetch(url);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -59,83 +132,241 @@ class ApiService {
     return data;
   }
 
-  // 转换推荐API返回的数据为统一格式
-  private convertRecommendItem(item: RecommendVideoItem): VideoItem {
-    return {
-      id: item.vod_id,
-      name: item.vod_name,
-      pic: item.vod_pic,
-      remarks: item.vod_remarks,
-      score: item.vod_score,
-      year: item.vod_year,
-      area: item.vod_area,
-      actor: item.vod_actor,
-      director: item.vod_director,
-      content: item.vod_content,
-    };
-  }
 
-  // 转换列表API返回的数据为统一格式
-  private convertListItem(item: ListVideoItem): VideoItem {
-    return {
-      id: item.id,
-      name: item.name,
-      pic: item.cover,
-      score: item.score,
-      updateTime: item.update_time,
-      remarks: '',
-      year: 1900,
-      area: '',
-      actor: '',
-      director: '',
-      content: '',
-    };
-  }
 
   async getCategories(): Promise<CategoriesResponse> {
-    return this.request<CategoriesResponse>('/vod/categories');
+    try {
+      // 尝试获取分类列表
+      const response = await this.request<any>('ac=type');
+      
+      // 检查响应格式
+      let categories = [];
+      
+      if (response && response.list) {
+        // 格式1: { list: [{ id: 1, name: '电影' }, ...] }
+        categories = response.list.map((item: any) => ({
+          type_id: item.id || item.type_id || 0,
+          type_name: item.name || item.type_name || ''
+        }));
+      } else if (response && response.data) {
+        // 格式2: { data: { list: [{ id: 1, name: '电影' }, ...] } }
+        categories = response.data.list.map((item: any) => ({
+          type_id: item.id || item.type_id || 0,
+          type_name: item.name || item.type_name || ''
+        }));
+      }
+      
+      return {
+        categories,
+        total: categories.length
+      };
+    } catch (error) {
+      console.error('Failed to get categories:', error);
+      // 返回默认分类
+      return {
+        categories: [
+          { type_id: 1, type_name: '电影' },
+          { type_id: 2, type_name: '电视剧' },
+          { type_id: 3, type_name: '综艺' },
+          { type_id: 4, type_name: '动漫' },
+          { type_id: 5, type_name: '纪录片' }
+        ],
+        total: 5
+      };
+    }
   }
 
   async getRecommended(): Promise<VideoItem[]> {
-    const response = await this.request<RecommendResponse>('/vod/recommend?size=20');
-    return response.items.map(item => this.convertRecommendItem(item));
+    // 不同的数据源可能有不同的API格式
+    try {
+      // 尝试使用通用的API格式
+      const response = await this.request<any>('ac=list&pg=1&t=1&h=0');
+      
+      // 检查响应格式
+      if (response && response.list) {
+        // 格式1: { list: [...] }
+        return response.list.map((item: any) => ({
+          id: item.id || item.vod_id || 0,
+          name: item.name || item.vod_name || '',
+          pic: item.cover || item.vod_pic || '',
+          score: item.score || item.vod_score || 0,
+          remarks: item.remarks || item.vod_remarks || '',
+          year: item.year || item.vod_year || 1900,
+          area: item.area || item.vod_area || '',
+          actor: item.actor || item.vod_actor || '',
+          director: item.director || item.vod_director || '',
+          content: item.content || item.vod_content || ''
+        }));
+      } else if (response && response.data) {
+        // 格式2: { data: { list: [...] } }
+        return response.data.list.map((item: any) => ({
+          id: item.id || item.vod_id || 0,
+          name: item.name || item.vod_name || '',
+          pic: item.cover || item.vod_pic || '',
+          score: item.score || item.vod_score || 0,
+          remarks: item.remarks || item.vod_remarks || '',
+          year: item.year || item.vod_year || 1900,
+          area: item.area || item.vod_area || '',
+          actor: item.actor || item.vod_actor || '',
+          director: item.director || item.vod_director || '',
+          content: item.content || item.vod_content || ''
+        }));
+      } else {
+        return [];
+      }
+    } catch (error) {
+      console.error('Failed to get recommended videos:', error);
+      return [];
+    }
   }
 
   async getVideoList(categoryId?: number, page: number = 1): Promise<{ videos: VideoItem[]; pagination: { total: number; totalPages: number; currentPage: number; } }> {
-    const params = new URLSearchParams({ page: page.toString() });
-    if (categoryId) {
-      params.append('categoryId', categoryId.toString());
-    }
-    const response = await this.request<ListResponse>(`/vod/list?${params}`);
-    return {
-      videos: response.list.map(item => this.convertListItem(item)),
-      pagination: {
-        total: response.total,
-        totalPages: response.totalPages,
-        currentPage: response.currentPage
+    try {
+      // 构建查询参数
+      const params = new URLSearchParams({ 
+        ac: 'list',
+        pg: page.toString() 
+      });
+      if (categoryId) {
+        params.append('t', categoryId.toString());
       }
-    };
+      
+      const response = await this.request<any>(params.toString());
+      
+      // 检查响应格式
+      let videos: VideoItem[] = [];
+      let total = 0;
+      let totalPages = 1;
+      
+      if (response && response.list) {
+        // 格式1: { list: [...], page: 1, pagecount: 10, total: 100 }
+        videos = response.list.map((item: any) => ({
+          id: item.id || item.vod_id || 0,
+          name: item.name || item.vod_name || '',
+          pic: item.cover || item.vod_pic || '',
+          score: item.score || item.vod_score || 0,
+          remarks: item.remarks || item.vod_remarks || '',
+          year: item.year || item.vod_year || 1900,
+          area: item.area || item.vod_area || '',
+          actor: item.actor || item.vod_actor || '',
+          director: item.director || item.vod_director || '',
+          content: item.content || item.vod_content || ''
+        }));
+        total = response.total || 0;
+        totalPages = response.pagecount || 1;
+      } else if (response && response.data) {
+        // 格式2: { data: { list: [...], page: 1, pagecount: 10, total: 100 } }
+        videos = response.data.list.map((item: any) => ({
+          id: item.id || item.vod_id || 0,
+          name: item.name || item.vod_name || '',
+          pic: item.cover || item.vod_pic || '',
+          score: item.score || item.vod_score || 0,
+          remarks: item.remarks || item.vod_remarks || '',
+          year: item.year || item.vod_year || 1900,
+          area: item.area || item.vod_area || '',
+          actor: item.actor || item.vod_actor || '',
+          director: item.director || item.vod_director || '',
+          content: item.content || item.vod_content || ''
+        }));
+        total = response.data.total || 0;
+        totalPages = response.data.pagecount || 1;
+      }
+      
+      return {
+        videos,
+        pagination: {
+          total,
+          totalPages,
+          currentPage: page
+        }
+      };
+    } catch (error) {
+      console.error('Failed to get video list:', error);
+      return {
+        videos: [],
+        pagination: {
+          total: 0,
+          totalPages: 0,
+          currentPage: 1
+        }
+      };
+    }
   }
 
   async searchVideos(name: string, page: number = 1): Promise<{ videos: VideoItem[]; pagination: { total: number; totalPages: number; currentPage: number; } }> {
-    const params = new URLSearchParams({
-      name,
-      page: page.toString()
-    });
-    const response = await this.request<ListResponse>(`/vod/search?${params}`);
-    return {
-      videos: response.list.map(item => this.convertListItem(item)),
-      pagination: {
-        total: response.total,
-        totalPages: response.totalPages,
-        currentPage: response.currentPage
+    try {
+      // 构建查询参数
+      const params = new URLSearchParams({ 
+        ac: 'list',
+        pg: page.toString(),
+        wd: name
+      });
+      
+      const response = await this.request<any>(params.toString());
+      
+      // 检查响应格式
+      let videos: VideoItem[] = [];
+      let total = 0;
+      let totalPages = 1;
+      
+      if (response && response.list) {
+        // 格式1: { list: [...], page: 1, pagecount: 10, total: 100 }
+        videos = response.list.map((item: any) => ({
+          id: item.id || item.vod_id || 0,
+          name: item.name || item.vod_name || '',
+          pic: item.cover || item.vod_pic || '',
+          score: item.score || item.vod_score || 0,
+          remarks: item.remarks || item.vod_remarks || '',
+          year: item.year || item.vod_year || 1900,
+          area: item.area || item.vod_area || '',
+          actor: item.actor || item.vod_actor || '',
+          director: item.director || item.vod_director || '',
+          content: item.content || item.vod_content || ''
+        }));
+        total = response.total || 0;
+        totalPages = response.pagecount || 1;
+      } else if (response && response.data) {
+        // 格式2: { data: { list: [...], page: 1, pagecount: 10, total: 100 } }
+        videos = response.data.list.map((item: any) => ({
+          id: item.id || item.vod_id || 0,
+          name: item.name || item.vod_name || '',
+          pic: item.cover || item.vod_pic || '',
+          score: item.score || item.vod_score || 0,
+          remarks: item.remarks || item.vod_remarks || '',
+          year: item.year || item.vod_year || 1900,
+          area: item.area || item.vod_area || '',
+          actor: item.actor || item.vod_actor || '',
+          director: item.director || item.vod_director || '',
+          content: item.content || item.vod_content || ''
+        }));
+        total = response.data.total || 0;
+        totalPages = response.data.pagecount || 1;
       }
-    };
+      
+      return {
+        videos,
+        pagination: {
+          total,
+          totalPages,
+          currentPage: page
+        }
+      };
+    } catch (error) {
+      console.error('Failed to search videos:', error);
+      return {
+        videos: [],
+        pagination: {
+          total: 0,
+          totalPages: 0,
+          currentPage: 1
+        }
+      };
+    }
   }
 
   async getLatest(): Promise<VideoItem[]> {
-    const response = await this.request<ListResponse>('/vod/latest');
-    return response.list.map(item => this.convertListItem(item));
+    // 直接调用getRecommended，因为最新视频通常就是推荐视频
+    return this.getRecommended();
   }
 
   async getVideoDetail(videoName: string): Promise<VideoItem | null> {
