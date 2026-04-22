@@ -493,18 +493,43 @@ class ApiService {
   }
 
   async getVideoUrl(id: number, episode: number): Promise<{ url: string; videoInfo: PlayResponse }> {
-    const params = new URLSearchParams({
-      proxy: 'true',
-      id: id.toString(),
-      episode: (episode - 1).toString() // 转换为基于0的索引
-    });
-    // 播放URL不使用缓存，因为可能会过期
-    const response = await this.request<PlayResponse>(`/vod/parse/single?${params}`, false);
-    
-    return {
-      url: response.episode.proxyUrl,
-      videoInfo: response
-    };
+    try {
+      const params = new URLSearchParams({
+        proxy: 'true',
+        id: id.toString(),
+        episode: (episode - 1).toString() // 转换为基于0的索引
+      });
+      // 播放URL不使用缓存，因为可能会过期
+      const response = await this.request<PlayResponse>(`/vod/parse/single?${params}`, false);
+      
+      return {
+        url: response.episode.proxyUrl,
+        videoInfo: response
+      };
+    } catch (error) {
+      console.error('Failed to get video URL:', error);
+      // 返回默认值，避免页面加载失败
+      return {
+        url: '',
+        videoInfo: {
+          videoId: id,
+          videoName: '',
+          episode: {
+            index: 0,
+            label: '',
+            parsedUrl: '',
+            proxyUrl: '',
+            parseInfo: {
+              headers: {},
+              type: ''
+            }
+          },
+          totalEpisodes: 1,
+          cover: '',
+          description: ''
+        }
+      };
+    }
   }
 }
 
