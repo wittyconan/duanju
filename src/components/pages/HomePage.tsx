@@ -105,37 +105,24 @@ export function HomePage() {
   const loadRecommendedVideos = async () => {
     if (loading) return; // 防止重复加载
     setLoading(true);
-    try {
-      const videos = await apiService.getRecommended();
-      setVideos(videos || []);
-    } catch (error) {
-      console.error('Failed to load videos:', error);
-      setVideos([]);
-    } finally {
-      setLoading(false);
-    }
+    const videos = await apiService.getRecommended();
+    setVideos(videos || []);
+    setLoading(false);
   };
 
   const loadVideosByCategory = async (categoryId: number | null, page: number = 1) => {
     if (loading) return; // 防止重复加载
     setLoading(true);
-    try {
-      if (categoryId) {
-        const result = await apiService.getVideoList(categoryId, page);
-        setVideos(result.videos || []);
-        setPagination(result.pagination);
-      } else {
-        const videos = await apiService.getRecommended();
-        setVideos(videos || []);
-        setPagination({ total: 0, totalPages: 0, currentPage: 1 });
-      }
-    } catch (error) {
-      console.error('Failed to load videos:', error);
-      setVideos([]);
+    if (categoryId) {
+      const result = await apiService.getVideoList(categoryId, page);
+      setVideos(result.videos || []);
+      setPagination(result.pagination);
+    } else {
+      const videos = await apiService.getRecommended();
+      setVideos(videos || []);
       setPagination({ total: 0, totalPages: 0, currentPage: 1 });
-    } finally {
-      setLoading(false);
     }
+    setLoading(false);
   };
 
   const handleSearch = async (query: string) => {
