@@ -161,6 +161,84 @@ class ApiService {
     }
   }
 
+  // 获取本地模拟视频数据
+  private getMockVideos(): VideoItem[] {
+    return [
+      {
+        id: 1,
+        name: '流浪地球3',
+        pic: 'https://picsum.photos/300/450',
+        score: 9.5,
+        remarks: '2025年科幻大片',
+        year: 2025,
+        area: '中国大陆',
+        actor: '吴京, 刘德华, 李雪健',
+        director: '郭帆',
+        content: '太阳即将膨胀为红巨星，人类必须寻找新的家园'
+      },
+      {
+        id: 2,
+        name: '复仇者联盟6',
+        pic: 'https://picsum.photos/301/450',
+        score: 9.0,
+        remarks: '漫威宇宙最终章',
+        year: 2025,
+        area: '美国',
+        actor: '小罗伯特·唐尼, 克里斯·埃文斯, 斯嘉丽·约翰逊',
+        director: '乔·罗素',
+        content: '复仇者联盟与多元宇宙的最终对决'
+      },
+      {
+        id: 3,
+        name: '三体',
+        pic: 'https://picsum.photos/302/450',
+        score: 9.2,
+        remarks: '刘慈欣科幻巨作',
+        year: 2024,
+        area: '中国大陆',
+        actor: '张鲁一, 于和伟, 陈瑾',
+        director: '杨磊',
+        content: '地球文明与三体文明的碰撞'
+      },
+      {
+        id: 4,
+        name: '狂飙',
+        pic: 'https://picsum.photos/303/450',
+        score: 8.8,
+        remarks: '2023年现象级反腐剧',
+        year: 2023,
+        area: '中国大陆',
+        actor: '张译, 张颂文, 李一桐',
+        director: '徐纪周',
+        content: '警察与黑恶势力的生死较量'
+      },
+      {
+        id: 5,
+        name: '长安三万里',
+        pic: 'https://picsum.photos/304/450',
+        score: 8.6,
+        remarks: '国产动画佳作',
+        year: 2023,
+        area: '中国大陆',
+        actor: '杨天翔, 凌振赫, 吴俊全',
+        director: '谢君伟, 邹靖',
+        content: '盛唐诗人李白与高适的传奇人生'
+      },
+      {
+        id: 6,
+        name: '孤注一掷',
+        pic: 'https://picsum.photos/305/450',
+        score: 8.7,
+        remarks: '反诈题材电影',
+        year: 2023,
+        area: '中国大陆',
+        actor: '张艺兴, 金晨, 王传君',
+        director: '申奥',
+        content: '讲述境外网络诈骗的黑暗内幕'
+      }
+    ];
+  }
+
   async getRecommended(): Promise<VideoItem[]> {
     // 不同的数据源可能有不同的API格式
     try {
@@ -170,7 +248,7 @@ class ApiService {
       // 检查响应格式
       if (response && response.list) {
         // 格式1: { list: [...] }
-        return response.list.map((item: any) => ({
+        const videos = response.list.map((item: any) => ({
           id: item.id || item.vod_id || 0,
           name: item.name || item.vod_name || '',
           pic: item.cover || item.vod_pic || '',
@@ -182,9 +260,11 @@ class ApiService {
           director: item.director || item.vod_director || '',
           content: item.content || item.vod_content || ''
         }));
+        // 如果API返回了数据，返回API数据
+        return videos.length > 0 ? videos : this.getMockVideos();
       } else if (response && response.data) {
         // 格式2: { data: { list: [...] } }
-        return response.data.list.map((item: any) => ({
+        const videos = response.data.list.map((item: any) => ({
           id: item.id || item.vod_id || 0,
           name: item.name || item.vod_name || '',
           pic: item.cover || item.vod_pic || '',
@@ -196,12 +276,16 @@ class ApiService {
           director: item.director || item.vod_director || '',
           content: item.content || item.vod_content || ''
         }));
+        // 如果API返回了数据，返回API数据
+        return videos.length > 0 ? videos : this.getMockVideos();
       } else {
-        return [];
+        // API返回格式不正确，使用模拟数据
+        return this.getMockVideos();
       }
     } catch (error) {
       console.error('Failed to get recommended videos:', error);
-      return [];
+      // API请求失败，使用模拟数据
+      return this.getMockVideos();
     }
   }
 
@@ -257,21 +341,37 @@ class ApiService {
         totalPages = response.data.pagecount || 1;
       }
       
-      return {
-        videos,
-        pagination: {
-          total,
-          totalPages,
-          currentPage: page
-        }
-      };
+      // 如果API返回了数据，返回API数据，否则使用模拟数据
+      if (videos.length > 0) {
+        return {
+          videos,
+          pagination: {
+            total,
+            totalPages,
+            currentPage: page
+          }
+        };
+      } else {
+        // 使用模拟数据
+        const mockVideos = this.getMockVideos();
+        return {
+          videos: mockVideos,
+          pagination: {
+            total: mockVideos.length,
+            totalPages: 1,
+            currentPage: 1
+          }
+        };
+      }
     } catch (error) {
       console.error('Failed to get video list:', error);
+      // API请求失败，使用模拟数据
+      const mockVideos = this.getMockVideos();
       return {
-        videos: [],
+        videos: mockVideos,
         pagination: {
-          total: 0,
-          totalPages: 0,
+          total: mockVideos.length,
+          totalPages: 1,
           currentPage: 1
         }
       };
