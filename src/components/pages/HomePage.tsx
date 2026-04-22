@@ -101,24 +101,42 @@ export function HomePage() {
   const loadRecommendedVideos = async () => {
     if (loading) return; // 防止重复加载
     setLoading(true);
-    const videos = await apiService.getRecommended();
-    setVideos(videos || []);
-    setLoading(false);
+    console.log('开始加载推荐视频');
+    try {
+      const videos = await apiService.getRecommended();
+      console.log('获取到的视频数据:', videos);
+      setVideos(videos || []);
+    } catch (error) {
+      console.error('加载推荐视频失败:', error);
+      setVideos([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const loadVideosByCategory = async (categoryId: number | null, page: number = 1) => {
     if (loading) return; // 防止重复加载
     setLoading(true);
-    if (categoryId) {
-      const result = await apiService.getVideoList(categoryId, page);
-      setVideos(result.videos || []);
-      setPagination(result.pagination);
-    } else {
-      const videos = await apiService.getRecommended();
-      setVideos(videos || []);
+    console.log('开始加载分类视频:', categoryId, page);
+    try {
+      if (categoryId) {
+        const result = await apiService.getVideoList(categoryId, page);
+        console.log('获取到的分类视频数据:', result);
+        setVideos(result.videos || []);
+        setPagination(result.pagination);
+      } else {
+        const videos = await apiService.getRecommended();
+        console.log('获取到的推荐视频数据:', videos);
+        setVideos(videos || []);
+        setPagination({ total: 0, totalPages: 0, currentPage: 1 });
+      }
+    } catch (error) {
+      console.error('加载分类视频失败:', error);
+      setVideos([]);
       setPagination({ total: 0, totalPages: 0, currentPage: 1 });
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const handleSearch = async (query: string) => {
