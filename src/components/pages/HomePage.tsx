@@ -60,33 +60,31 @@ export function HomePage() {
   };
 
   useEffect(() => {
-    if (categories.length > 0) {
-      const currentPath = location.pathname;
-      
-      if (currentPath === '/recommend') {
-        setIsRecommendMode(true);
-        setActiveCategory(null);
-        setCurrentPage(1);
-        loadRecommendedVideos();
-      } else if (categoryId) {
-        const targetCategoryId = parseInt(categoryId);
+    const currentPath = location.pathname;
+    
+    if (currentPath === '/recommend') {
+      setIsRecommendMode(true);
+      setActiveCategory(null);
+      setCurrentPage(1);
+      loadRecommendedVideos();
+    } else if (categoryId) {
+      const targetCategoryId = parseInt(categoryId);
+      setIsRecommendMode(false);
+      setActiveCategory(targetCategoryId);
+      setCurrentPage(1);
+      loadVideosByCategory(targetCategoryId, 1);
+    } else if (currentPath === '/' && activeCategory === null && !isRecommendMode) {
+      // 默认选择第一个分类
+      const firstCategory = categories[0]?.type_id;
+      if (firstCategory) {
         setIsRecommendMode(false);
-        setActiveCategory(targetCategoryId);
+        setActiveCategory(firstCategory);
         setCurrentPage(1);
-        loadVideosByCategory(targetCategoryId, 1);
-      } else if (currentPath === '/' && activeCategory === null && !isRecommendMode) {
-        // 默认选择第一个分类
-        const firstCategory = categories[0]?.type_id;
-        if (firstCategory) {
-          setIsRecommendMode(false);
-          setActiveCategory(firstCategory);
-          setCurrentPage(1);
-          navigate(`/category/${firstCategory}`, { replace: true });
-          loadVideosByCategory(firstCategory, 1);
-        }
+        navigate(`/category/${firstCategory}`, { replace: true });
+        loadVideosByCategory(firstCategory, 1);
       }
     }
-  }, [categories, categoryId, location.pathname, navigate, currentSource]);
+  }, [categories, categoryId, location.pathname, navigate, currentSource, isRecommendMode, activeCategory]);
 
   const loadCategories = async () => {
     setCategoriesLoading(true);
