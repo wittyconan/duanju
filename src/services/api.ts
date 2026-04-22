@@ -280,11 +280,13 @@ class ApiService {
         return videos.length > 0 ? videos : this.getMockVideos();
       } else {
         // API返回格式不正确，使用模拟数据
+        console.log('API返回格式不正确，使用模拟数据');
         return this.getMockVideos();
       }
     } catch (error) {
       console.error('Failed to get recommended videos:', error);
       // API请求失败，使用模拟数据
+      console.log('API请求失败，使用模拟数据');
       return this.getMockVideos();
     }
   }
@@ -353,6 +355,7 @@ class ApiService {
         };
       } else {
         // 使用模拟数据
+        console.log('API返回数据为空，使用模拟数据');
         const mockVideos = this.getMockVideos();
         return {
           videos: mockVideos,
@@ -366,6 +369,7 @@ class ApiService {
     } catch (error) {
       console.error('Failed to get video list:', error);
       // API请求失败，使用模拟数据
+      console.log('API请求失败，使用模拟数据');
       const mockVideos = this.getMockVideos();
       return {
         videos: mockVideos,

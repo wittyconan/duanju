@@ -73,18 +73,15 @@ export function HomePage() {
       setActiveCategory(targetCategoryId);
       setCurrentPage(1);
       loadVideosByCategory(targetCategoryId, 1);
-    } else if (currentPath === '/' && activeCategory === null && !isRecommendMode) {
+    } else if (currentPath === '/' && categories.length > 0) {
       // 默认选择第一个分类
-      const firstCategory = categories[0]?.type_id;
-      if (firstCategory) {
-        setIsRecommendMode(false);
-        setActiveCategory(firstCategory);
-        setCurrentPage(1);
-        navigate(`/category/${firstCategory}`, { replace: true });
-        loadVideosByCategory(firstCategory, 1);
-      }
+      const firstCategory = categories[0].type_id;
+      setIsRecommendMode(false);
+      setActiveCategory(firstCategory);
+      setCurrentPage(1);
+      navigate(`/category/${firstCategory}`, { replace: true });
     }
-  }, [categories, categoryId, location.pathname, navigate, currentSource, isRecommendMode, activeCategory]);
+  }, [categories, categoryId, location.pathname, navigate, currentSource]);
 
   const loadCategories = async () => {
     setCategoriesLoading(true);
