@@ -328,7 +328,7 @@ class ApiService {
         videos = response.data.list.map((item: any) => ({
           id: item.id || item.vod_id || 0,
           name: item.name || item.vod_name || '',
-          pic: item.cover || item.vod_pic || '',
+          pic: item.cover || item.vod_pic || `https://picsum.photos/300/450?random=${item.id || item.vod_id}`,
           score: item.score || item.vod_score || 0,
           remarks: item.remarks || item.vod_remarks || '',
           year: item.year || item.vod_year || 1900,
@@ -415,7 +415,7 @@ class ApiService {
         videos = response.data.list.map((item: any) => ({
           id: item.id || item.vod_id || 0,
           name: item.name || item.vod_name || '',
-          pic: item.cover || item.vod_pic || '',
+          pic: item.cover || item.vod_pic || `https://picsum.photos/300/450?random=${item.id || item.vod_id}`,
           score: item.score || item.vod_score || 0,
           remarks: item.remarks || item.vod_remarks || '',
           year: item.year || item.vod_year || 1900,
