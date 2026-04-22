@@ -1,6 +1,7 @@
 import type { CategoriesResponse, RecommendResponse, ListResponse, VideoItem, RecommendVideoItem, ListVideoItem } from '@/types';
 
-const BASE_URL = 'https://api.r2afosne.dpdns.org';
+// 使用相对路径，在开发环境中会通过Vite代理，在生产环境中会通过Cloudflare Pages路由规则代理
+const BASE_URL = '/api-proxy';
 
 interface PlayResponse {
   videoId: number;
