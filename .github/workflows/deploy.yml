@@ -13,11 +13,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18.17.0'
-          cache: 'pnpm'
+      - name: Install Node.js
+        run: |
+          curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+          sudo apt-get install -y nodejs
+          node -v
+          npm -v
+
+      - name: Install pnpm
+        run: |
+          npm install -g pnpm
+          pnpm -v
 
       - name: Install dependencies
         run: pnpm install
