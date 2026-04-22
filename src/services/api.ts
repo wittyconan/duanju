@@ -2,28 +2,14 @@ import type { CategoriesResponse, VideoItem } from '@/types';
 
 // 可用的视频数据源列表
 const VIDEO_SOURCES = [
-  { id: 'hongniu', name: '紅牛資源', api: 'http://hongniuzy2.com/api.php/provide/vod/from/hnm3u8' },
-  { id: 'liangzi', name: '量子資源', api: 'http://cj.lziapi.com/api.php/provide/vod/from/lzm3u8' },
-  { id: 'wolong', name: '卧龙资源', api: 'http://collect.wolongzyw.com/api.php/provide/vod' },
-  { id: 'senlin', name: '森林资源', api: 'http://slapibf.com/api.php/provide/vod' },
-  { id: 'shandian', name: '閃電資源', api: 'http://sdzyapi.com/api.php/provide/vod/from/sdm3u8' },
-  { id: 'jinying', name: '金鹰资源', api: 'http://jyzyapi.com/provide/vod/from/jinyingm3u8' },
-  { id: 'guangsu', name: '光速资源', api: 'http://api.guangsuapi.com/api.php/provide/vod/from/gsm3u8' },
-  { id: 'aosika', name: '奥斯卡资源网', api: 'http://aosikazy.com/api.php/provide/vod' },
-  { id: 'yinghua', name: '樱花资源网', api: 'http://m3u8.apiyhzy.com/api.php/provide/vod' },
-  { id: 'shandian2', name: '闪电资源', api: 'http://sdzyapi.com/api.php/provide/vod' },
-  { id: 'baidu', name: '百度资源', api: 'http://api.apibdzy.com/api.php/provide/vod' },
-  { id: 'sanliuling', name: '360|点播', api: 'https://360zy.com/api.php/provide/vod/' },
   { id: 'niuniu', name: '牛牛|点播', api: 'https://api.niuniuzy.me/api.php/provide/vod/' },
   { id: 'yaya', name: '丫丫|点播', api: 'https://cj.yayazy.net/api.php/provide/vod/' },
   { id: 'haohua', name: '豪华|点播', api: 'https://hhzyapi.com/api.php/provide/vod' },
   { id: 'jisu', name: '极速|点播', api: 'https://jszyapi.com/api.php/provide/vod' },
   { id: 'suoni', name: '索尼|点播', api: 'https://suoniapi.com/api.php/provide/vod/' },
-  { id: 'feifan', name: '非凡|点播', api: 'http://cj.ffzyapi.com/api.php/provide/vod/' },
   { id: 'liangzi2', name: '量子|点播', api: 'https://cj.lziapi.com/api.php/provide/vod/' },
   { id: 'baofeng', name: '暴风|点播', api: 'https://bfzyapi.com/api.php/provide/vod/' },
   { id: 'hongniu2', name: '红牛|点播', api: 'https://www.hongniuzy2.com/api.php/provide/vod/' },
-  { id: 'shandian3', name: '闪电|点播', api: 'http://sdzyapi.com/api.php/provide/vod/' },
   { id: 'yinghua2', name: '樱花|点播', api: 'https://m3u8.apiyhzy.com/api.php/provide/vod/' },
   { id: 'wolong2', name: '卧龙|点播', api: 'https://collect.wolongzyw.com/api.php/provide/vod/' },
   { id: 'huya', name: '虎牙|点播', api: 'https://www.huyaapi.com/api.php/provide/vod/' },
@@ -32,7 +18,6 @@ const VIDEO_SOURCES = [
   { id: 'wujin', name: '无尽|点播', api: 'https://api.wujinapi.com/api.php/provide/vod/' },
   { id: 'subo', name: '速博|点播', api: 'https://subocaiji.com/api.php/provide/vod/' },
   { id: 'modu', name: '魔都|点播', api: 'https://caiji.moduapi.cc/api.php/provide/vod/' },
-  { id: 'zuida', name: '最大|点播', api: 'http://zuidazy.me/api.php/provide/vod/' },
   { id: 'haohua2', name: '火狐|点播', api: 'https://hhzyapi.com/api.php/provide/vod/' },
   { id: 'xinlang', name: '新浪|点播', api: 'https://api.xinlangapi.com/xinlangapi.php/provide/vod/' }
 ];
