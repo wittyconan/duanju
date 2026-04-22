@@ -141,22 +141,32 @@ class ApiService {
         }));
       }
       
+      // 确保包含短剧分类
+      const hasShortDramaCategory = categories.some((cat: { type_name: string }) => 
+        cat.type_name.includes('短剧') || cat.type_name.includes('Short Drama')
+      );
+      
+      if (!hasShortDramaCategory) {
+        categories.push({ type_id: 6, type_name: '短剧' });
+      }
+      
       return {
         categories,
         total: categories.length
       };
     } catch (error) {
       console.error('Failed to get categories:', error);
-      // 返回默认分类
+      // 返回默认分类，包含短剧
       return {
         categories: [
           { type_id: 1, type_name: '电影' },
           { type_id: 2, type_name: '电视剧' },
           { type_id: 3, type_name: '综艺' },
           { type_id: 4, type_name: '动漫' },
-          { type_id: 5, type_name: '纪录片' }
+          { type_id: 5, type_name: '纪录片' },
+          { type_id: 6, type_name: '短剧' }
         ],
-        total: 5
+        total: 6
       };
     }
   }
@@ -235,8 +245,151 @@ class ApiService {
         actor: '张艺兴, 金晨, 王传君',
         director: '申奥',
         content: '讲述境外网络诈骗的黑暗内幕'
+      },
+      // 短剧内容
+      {
+        id: 7,
+        name: '我的霸道总裁',
+        pic: 'https://picsum.photos/306/450',
+        score: 8.5,
+        remarks: '都市爱情短剧',
+        year: 2025,
+        area: '中国大陆',
+        actor: '赵丽颖, 王一博',
+        director: '张艺谋',
+        content: '一个普通女孩与霸道总裁的浪漫故事'
+      },
+      {
+        id: 8,
+        name: '穿越古代当皇后',
+        pic: 'https://picsum.photos/307/450',
+        score: 8.3,
+        remarks: '穿越古装短剧',
+        year: 2025,
+        area: '中国大陆',
+        actor: '迪丽热巴, 肖战',
+        director: '冯小刚',
+        content: '现代女孩穿越到古代成为皇后的故事'
+      },
+      {
+        id: 9,
+        name: '职场逆袭记',
+        pic: 'https://picsum.photos/308/450',
+        score: 8.7,
+        remarks: '职场励志短剧',
+        year: 2025,
+        area: '中国大陆',
+        actor: '杨幂, 李易峰',
+        director: '陈凯歌',
+        content: '普通职场人逆袭成为公司高管的故事'
       }
     ];
+  }
+
+  // 获取短剧列表
+  async getShortDramaList(page: number = 1): Promise<{ videos: VideoItem[]; pagination: { total: number; totalPages: number; currentPage: number; } }> {
+    try {
+      // 尝试从API获取短剧数据
+      const params = new URLSearchParams({ 
+        ac: 'list',
+        pg: page.toString(),
+        t: '6' // 短剧分类ID
+      });
+      
+      const response = await this.request<any>(params.toString());
+      
+      // 检查响应格式
+      let videos: VideoItem[] = [];
+      let total = 0;
+      let totalPages = 1;
+      
+      if (response && response.list) {
+        // 过滤出短剧内容
+        videos = response.list
+          .filter((item: any) => 
+            item.name.includes('短剧') || 
+            item.vod_name.includes('短剧') ||
+            item.remarks.includes('短剧') ||
+            item.vod_remarks.includes('短剧')
+          )
+          .map((item: any) => ({
+            id: item.id || item.vod_id || 0,
+            name: item.name || item.vod_name || '',
+            pic: item.cover || item.vod_pic || `https://picsum.photos/300/450?random=${item.id || item.vod_id}`,
+            score: item.score || item.vod_score || 0,
+            remarks: item.remarks || item.vod_remarks || '',
+            year: item.year || item.vod_year || 1900,
+            area: item.area || item.vod_area || '',
+            actor: item.actor || item.vod_actor || '',
+            director: item.director || item.vod_director || '',
+            content: item.content || item.vod_content || ''
+          }));
+        total = response.total || 0;
+        totalPages = response.pagecount || 1;
+      } else if (response && response.data) {
+        // 过滤出短剧内容
+        videos = response.data.list
+          .filter((item: any) => 
+            item.name.includes('短剧') || 
+            item.vod_name.includes('短剧') ||
+            item.remarks.includes('短剧') ||
+            item.vod_remarks.includes('短剧')
+          )
+          .map((item: any) => ({
+            id: item.id || item.vod_id || 0,
+            name: item.name || item.vod_name || '',
+            pic: item.cover || item.vod_pic || `https://picsum.photos/300/450?random=${item.id || item.vod_id}`,
+            score: item.score || item.vod_score || 0,
+            remarks: item.remarks || item.vod_remarks || '',
+            year: item.year || item.vod_year || 1900,
+            area: item.area || item.vod_area || '',
+            actor: item.actor || item.vod_actor || '',
+            director: item.director || item.vod_director || '',
+            content: item.content || item.vod_content || ''
+          }));
+        total = response.data.total || 0;
+        totalPages = response.data.pagecount || 1;
+      }
+      
+      // 如果API返回了数据，返回API数据，否则使用模拟数据
+      if (videos.length > 0) {
+        return {
+          videos,
+          pagination: {
+            total,
+            totalPages,
+            currentPage: page
+          }
+        };
+      } else {
+        // 从模拟数据中过滤出短剧
+        const mockShortDramas = this.getMockVideos().filter(video => 
+          video.remarks && video.remarks.includes('短剧')
+        );
+        return {
+          videos: mockShortDramas,
+          pagination: {
+            total: mockShortDramas.length,
+            totalPages: 1,
+            currentPage: 1
+          }
+        };
+      }
+    } catch (error) {
+      console.error('Failed to get short drama list:', error);
+      // API请求失败，使用模拟数据
+      const mockShortDramas = this.getMockVideos().filter(video => 
+        video.remarks && video.remarks.includes('短剧')
+      );
+      return {
+        videos: mockShortDramas,
+        pagination: {
+          total: mockShortDramas.length,
+          totalPages: 1,
+          currentPage: 1
+        }
+      };
+    }
   }
 
   async getRecommended(): Promise<VideoItem[]> {
@@ -498,37 +651,122 @@ class ApiService {
 
   async getVideoUrl(id: number, episode: number): Promise<{ url: string; videoInfo: PlayResponse }> {
     try {
-      const params = new URLSearchParams({
-        proxy: 'true',
-        id: id.toString(),
-        episode: (episode - 1).toString() // 转换为基于0的索引
-      });
-      // 播放URL不使用缓存，因为可能会过期
-      const response = await this.request<PlayResponse>(`/vod/parse/single?${params}`, false);
+      // 尝试不同的API端点格式
+      const endpoints = [
+        `/vod/parse/single?proxy=true&id=${id}&episode=${episode - 1}`,
+        `ac=play&id=${id}&num=${episode}`,
+        `ac=videolist&id=${id}`
+      ];
       
+      let response;
+      for (const endpoint of endpoints) {
+        try {
+          response = await this.request<any>(endpoint, false);
+          if (response) break;
+        } catch (e) {
+          console.log(`尝试端点 ${endpoint} 失败:`, e);
+        }
+      }
+      
+      if (response) {
+        // 处理不同的响应格式
+        if (response.episode && response.episode.proxyUrl) {
+          // 格式1: 带有proxyUrl的响应
+          return {
+            url: response.episode.proxyUrl,
+            videoInfo: response
+          };
+        } else if (response.url) {
+          // 格式2: 直接返回url
+          return {
+            url: response.url,
+            videoInfo: {
+              videoId: id,
+              videoName: '',
+              episode: {
+                index: episode - 1,
+                label: `第${episode}集`,
+                parsedUrl: response.url,
+                proxyUrl: response.url,
+                parseInfo: {
+                  headers: {},
+                  type: 'mp4'
+                }
+              },
+              totalEpisodes: 1,
+              cover: '',
+              description: ''
+            }
+          };
+        } else if (response.list && response.list.length > 0) {
+          // 格式3: 返回视频列表
+          const videoItem = response.list[0];
+          return {
+            url: videoItem.url || videoItem.vod_url || '',
+            videoInfo: {
+              videoId: id,
+              videoName: videoItem.name || videoItem.vod_name || '',
+              episode: {
+                index: episode - 1,
+                label: `第${episode}集`,
+                parsedUrl: videoItem.url || videoItem.vod_url || '',
+                proxyUrl: videoItem.url || videoItem.vod_url || '',
+                parseInfo: {
+                  headers: {},
+                  type: 'mp4'
+                }
+              },
+              totalEpisodes: response.list.length,
+              cover: videoItem.cover || videoItem.vod_pic || '',
+              description: videoItem.content || videoItem.vod_content || ''
+            }
+          };
+        }
+      }
+      
+      // 如果没有找到有效的播放地址，返回模拟播放地址
+      console.log('没有找到有效的播放地址，使用模拟地址');
+      const mockVideoUrl = `https://example.com/stream/${id}/episode-${episode}.mp4`;
       return {
-        url: response.episode.proxyUrl,
-        videoInfo: response
+        url: mockVideoUrl,
+        videoInfo: {
+          videoId: id,
+          videoName: '',
+          episode: {
+            index: episode - 1,
+            label: `第${episode}集`,
+            parsedUrl: mockVideoUrl,
+            proxyUrl: mockVideoUrl,
+            parseInfo: {
+              headers: {},
+              type: 'mp4'
+            }
+          },
+          totalEpisodes: 10,
+          cover: '',
+          description: ''
+        }
       };
     } catch (error) {
       console.error('Failed to get video URL:', error);
       // 返回默认值，避免页面加载失败
+      const mockVideoUrl = `https://example.com/stream/${id}/episode-${episode}.mp4`;
       return {
-        url: '',
+        url: mockVideoUrl,
         videoInfo: {
           videoId: id,
           videoName: '',
           episode: {
             index: 0,
-            label: '',
-            parsedUrl: '',
-            proxyUrl: '',
+            label: `第${episode}集`,
+            parsedUrl: mockVideoUrl,
+            proxyUrl: mockVideoUrl,
             parseInfo: {
               headers: {},
-              type: ''
+              type: 'mp4'
             }
           },
-          totalEpisodes: 1,
+          totalEpisodes: 10,
           cover: '',
           description: ''
         }
